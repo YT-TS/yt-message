@@ -18,7 +18,7 @@ services:
       - REDIS_IP=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_ROOT_PASSWORD}
-      - XXL_JOB_ADMIN_IP=xxl_job
+      - XXL_JOB_ADMIN_IP=xxl-job
       - XXL_JOB_ADMIN_PORT=8080
       - XXL_JOB_ADMIN_ACCESS_TOKEN=${XXL_JOB_ADMIN_ACCESS_TOKEN}
       - GRAYLOG_IP=graylog

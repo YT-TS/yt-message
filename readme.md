@@ -106,7 +106,7 @@ YT-MESSAGE
                     .templateId(333L)
                     .contentParams(new String[]{"1","22","aa"})
                     .subjectParams(new String[]{"3","bb","aa"})
-                    .receiveAccount("702279350@qq.com")
+                    .receiveAccount("xxxxx@qq.com")
                     .build();
             MessageSendRsp messageSendRsp = messageService.sendMessage(build);
        }
