@@ -119,7 +119,7 @@ YT-MESSAGE
 
 ### 7.消息记录
 
-![message_record](doc/images/message_record.jpg)
+![message_record](doc/images/message_record.png)
 
 ### 8.error日志监控
 
