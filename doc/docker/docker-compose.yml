@@ -1,0 +1,170 @@
+services:
+  yt-message-admin:
+    build: ./admin
+    ports:
+      - "${ADMIN_PORT}:8059"
+    restart: on-failure
+    container_name: yt-message-admin
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+      - xxl-job
+    environment:
+      - MYSQL_IP=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - REDIS_IP=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_ROOT_PASSWORD}
+      - XXL_JOB_ADMIN_IP=xxl_job
+      - XXL_JOB_ADMIN_PORT=8080
+      - XXL_JOB_ADMIN_ACCESS_TOKEN=${XXL_JOB_ADMIN_ACCESS_TOKEN}
+      - GRAYLOG_IP=graylog
+      - GRAYLOG_PORT=9000
+      - GRAYLOG_AUTHORIZATION=${GRAYLOG_AUTHORIZATION}
+      - GRAYLOG_BIZ_STREAM_ID=${GRAYLOG_BIZ_STREAM_ID}
+      - GRAYLOG_ERROR_STREAM_ID=${GRAYLOG_ERROR_STREAM_ID}
+      - DUBBO_REGISTRY_ADDRESS=${DUBBO_REGISTRY_ADDRESS}
+    networks:
+      - yt-message
+    volumes:
+      - /app/admin/logs:/app/logs
+  yt-message-api:
+    build: ./api
+    ports:
+      - "${API_PORT}:8888"
+    restart: on-failure
+    container_name: yt-message-api
+    environment:
+     - DUBBO_REGISTRY_ADDRESS={DUBBO_REGISTRY_ADDRESS}
+    networks:
+      - yt-message
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    volumes:
+      - /app/api/logs:/app/logs
+  yt-message-handler:
+    build: ./handler
+    ports:
+      - "${HANDLER_PORT}:9090"
+    restart: on-failure
+    container_name: yt-message-handler
+    environment:
+      - REDIS_IP=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_ROOT_PASSWORD}
+      - DUBBO_REGISTRY_ADDRESS=${DUBBO_REGISTRY_ADDRESS}
+    networks:
+      - yt-message
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    volumes:
+      - /app/handler/logs:/app/logs
+  redis:
+    image: redis:6.2.17
+    restart: always
+    container_name: redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    command: >
+      sh -c '
+      if [ -z "${REDIS_ROOT_PASSWORD}" ]; then
+        redis-server /etc/redis/redis.conf
+      else
+        redis-server /etc/redis/redis.conf --requirepass ${REDIS_ROOT_PASSWORD}
+      fi'
+    volumes:
+      - /app/redis/data:/data
+      - /app/redis/conf/redis.conf:/etc/redis/redis.conf
+      - /app/redis/logs:/logs
+    networks:
+      - yt-message
+  mysql:
+    image: mysql:5.7.44
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Shanghai
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - /app/mysql/data/:/var/lib/mysql
+      - /app/mysql/log:/var/log/mysql
+    #            - /etc/timezone:/etc/timezone:ro
+    #            - /etc/localtime:/etc/localtime:ro
+    command:
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    networks:
+      - yt-message
+  xxl-job:
+    image: xuxueli/xxl-job-admin:3.0.0
+    container_name: xxl-job
+    ports:
+      - "${XXL_JOB_PORT}:8080"
+    environment:
+      PARAMS: '--spring.datasource.url=jdbc:mysql://mysql:3306/xxl_job?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai --spring.datasource.username=root  --spring.datasource.password=${MYSQL_ROOT_PASSWORD}'
+    networks:
+      - yt-message
+    depends_on:
+      - mysql
+      - redis
+      - nacos
+    volumes:
+      - /app/xxl_job/logs:/data/applogs
+  nacos:
+    image: nacos/nacos-server:v2.5.0
+    container_name: nacos
+    restart: always
+    environment:
+      - NACOS_AUTH_ENABLE=FALSE
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - NACOS_AUTH_IDENTITY_KEY=serverIdentity
+      - NACOS_AUTH_IDENTITY_VALUE=security
+      - NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789
+    volumes:
+      - /app/nacos/data/logs:/home/nacos/logs
+      - /app/nacos/data/data:/home/nacos/data
+    ports:
+      - "${NACOS_PORT}:8848"
+      - "9848:9848"
+    networks:
+      - yt-message
+  jobmanager:
+    image: flink:1.20.0-java17
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+    networks:
+      - yt-message
+  taskmanager:
+    image: flink:1.20.0-java17
+    depends_on:
+      - jobmanager
+    command: taskmanager
+    scale: 1
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+    networks:
+      - yt-message
+networks:
+  yt-message:
+    driver: bridge
