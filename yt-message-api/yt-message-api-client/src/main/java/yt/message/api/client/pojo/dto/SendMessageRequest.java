@@ -130,6 +130,9 @@ public class SendMessageRequest implements Serializable {
     public static SendRobotMessageRequestBuilder sendRobotMessageRequestBuilder() {
         return new SendRobotMessageRequestBuilder();
     }
+    public static SendMiniProgramMessageRequestBuilder sendMiniProgramMessageRequestBuilder() {
+        return new SendMiniProgramMessageRequestBuilder();
+    }
 
 
 
@@ -231,6 +234,43 @@ public class SendMessageRequest implements Serializable {
             return new SendMessageRequest(templateId, null,null,null,contentParams,single,MessageType.ROBOT.getCode(),requireAsync);
         }
 
+    }
+
+    public static class SendMiniProgramMessageRequestBuilder extends BaseBuilder {
+        private SendMiniProgramMessageRequestBuilder() {
+        }
+
+        public SendMiniProgramMessageRequestBuilder templateId(Long templateId) {
+
+            this.templateId = templateId;
+            return this;
+        }
+
+        public SendMiniProgramMessageRequestBuilder receiveAccount(String receiveAccount) {
+            this.receiveAccount = receiveAccount;
+            this.single = true;
+            return this;
+        }
+        public SendMiniProgramMessageRequestBuilder receiveAccounts(Set<String> receiveAccounts) {
+            this.receiveAccounts = receiveAccounts;
+            this.single = false;
+            return this;
+        }
+
+
+        public SendMiniProgramMessageRequestBuilder contentParams(String[] contentParams) {
+            this.contentParams = contentParams;
+            return this;
+        }
+        public SendMiniProgramMessageRequestBuilder requireAsync(boolean requireAsync) {
+            this.requireAsync = requireAsync ? YesOrNoEnum.YES.getValue() : YesOrNoEnum.NO.getValue();
+            return this;
+        }
+
+
+        public SendMessageRequest build() {
+            return new SendMessageRequest(templateId, receiveAccount,receiveAccounts,null,contentParams,single, MessageType.SMS.getCode(),requireAsync);
+        }
     }
 
 

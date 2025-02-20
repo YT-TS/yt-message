@@ -21,7 +21,8 @@ public enum MessageType {
 //code 不要小于0
     SMS(1, "短信"),
     EMAIL(2,"邮箱"),
-    ROBOT(3,"机器人");
+    ROBOT(3,"机器人"),
+    MINI_PROGRAM(4,"小程序");
 
     private Integer code;
 

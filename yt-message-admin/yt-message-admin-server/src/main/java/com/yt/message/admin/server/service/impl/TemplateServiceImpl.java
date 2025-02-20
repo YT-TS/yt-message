@@ -128,6 +128,10 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             case ROBOT:
                 updateWrapper.set(Template::getContent, reqVo.getContent());
                 break;
+            case MINI_PROGRAM:
+                updateWrapper.set(Template::getPage, reqVo.getPage());
+                updateWrapper.set(Template::getPlatformTemplateId, reqVo.getPlatformTemplateId());
+                break;
         }
         ExceptionAssert.throwOnFalse(!existByTemplateNameAndId(reqVo.getTemplateName(), reqVo.getTemplateId()), new BusinessException("模板名已存在"));
 
@@ -190,6 +194,10 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 break;
             case ROBOT:
                 template.setContent(reqVo.getContent());
+                break;
+            case MINI_PROGRAM:
+                template.setPage(reqVo.getPage());
+                template.setPlatformTemplateId(reqVo.getPlatformTemplateId());
                 break;
         }
         ExceptionAssert.throwOnFalse(!existByTemplateNameAndId(template.getTemplateName(),null), new BusinessException("模板名已存在"));
@@ -268,6 +276,12 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             case ROBOT -> SendMessageRequest.sendRobotMessageRequestBuilder()
                     .templateId(reqVo.getTemplateId())
                     .contentParams(reqVo.getContentParams())
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(reqVo.getRequireAsync()))
+                    .build();
+            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
+                    .templateId(reqVo.getTemplateId())
+                    .contentParams(reqVo.getContentParams())
+                    .receiveAccounts(receiveAccounts)
                     .requireAsync(YesOrNoEnum.YES.getValue().equals(reqVo.getRequireAsync()))
                     .build();
         };

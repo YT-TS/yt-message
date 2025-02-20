@@ -2,7 +2,7 @@ package com.yt.message.admin.server.pojo.vo;
 
 import com.yt.message.admin.server.pojo.vo.validation.AddTemplateGroupSequenceProvider;
 import com.yt.message.admin.server.pojo.vo.validation.group.EmailGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.RequiredRateLimitGroup;
+import com.yt.message.admin.server.pojo.vo.validation.group.MiniProgramGroup;
 import com.yt.message.admin.server.pojo.vo.validation.group.RobotGroup;
 import com.yt.message.admin.server.pojo.vo.validation.group.SmsGroup;
 import jakarta.validation.constraints.NotBlank;
@@ -123,4 +123,10 @@ public class TemplateReqVo {
      */
     @NotNull(groups = EmailGroup.class, message = "正文内容是否是html格式不能为空")
     private Integer requireHtml;
+
+    /**
+     * 小程序的跳转页面地址
+     */
+    @NotBlank(groups = MiniProgramGroup.class, message = "小程序的跳转页面地址不能为空")
+    private String page;
 }

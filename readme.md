@@ -46,7 +46,7 @@ YT-MESSAGE
 ├─yt-message-common             通用
 ├─yt-message-handler            消息处理端
 ├─yt-message-log                日志配置  
-├─yt-message-mq                 消息队列篇配置
+├─yt-message-mq                 消息队列配置
 └─yt-message-stream-flink       流处理端
 ```
 
@@ -131,7 +131,7 @@ YT-MESSAGE
 
 ## 后续更新
 
-- [ ] 支持更多的消息类型 ，安卓通知栏、微信服务号、微信小程序、支付宝小程序等待
+- [ ] 支持更多的消息类型 ，安卓通知栏、微信服务号、微信小程序、支付宝小程序等等
 
 - [ ] 引入用户管理
 

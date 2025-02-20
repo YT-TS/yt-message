@@ -109,6 +109,8 @@ public class TemplateCache implements Serializable {
 
     private Integer requireHtml;
 
-
-
+    /**
+     * 小程序的跳转页面地址
+     */
+    private String page;
 }

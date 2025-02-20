@@ -16,6 +16,7 @@ public class HttpClientConfig {
 
     @Bean
     public CloseableHttpClient httpClient() {
+
         return HttpClients.createDefault();
     }
 

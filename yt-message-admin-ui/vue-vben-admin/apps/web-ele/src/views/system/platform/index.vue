@@ -288,7 +288,7 @@ const [Form, formApi] = useVbenForm({
       help: '当限流key不为空时,必填',
       suffix: () => '单位：秒',
     },
-  
+
   ]
 });
 //添加表单
@@ -296,7 +296,7 @@ const [AddForm] = useVbenForm({
   // 提交函数
   handleSubmit: handleAdd,
   commonConfig: {
-    colon:true,
+    colon: true,
     labelWidth: 200,
   },
   actionWrapperClass: 'text-center',
@@ -396,15 +396,6 @@ const [AddForm] = useVbenForm({
         if(values) {
           return values.messageType == 1 || values.messageType == 3;
         },
-        // componentProps(values) {
-        //   if (values.messageType==3) {
-        //     return {
-        //       placeholder: '签名密钥',
-        //       label: '签名密钥',
-        //     };
-        //   }
-        //   return {};
-        // },
         triggerFields: ['messageType'],
       },
       rules: 'required',
@@ -468,7 +459,7 @@ const [AddForm] = useVbenForm({
       suffix: () => '单位：秒',
       help: '当限流key不为空时,必填',
     },
-    
+
   ]
 });
 //打开编辑框
