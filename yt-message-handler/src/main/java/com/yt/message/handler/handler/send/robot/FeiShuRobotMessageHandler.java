@@ -66,8 +66,8 @@ public class FeiShuRobotMessageHandler implements MessageHandler {
 
 
         } catch (Exception e) {
-            log.error("发送飞书机器人消息失败,http请求异常",e);
-            return MessageSendResult.fail("发送飞书机器人消息失败,http请求异常");
+            log.error("飞书机器人发送消息失败,http请求异常",e);
+            return MessageSendResult.fail("飞书机器人发送消息失败,http请求异常：" +e.getMessage());
         }
 
         FeiShuRobotResponse response = JSONUtil.toBean(result, FeiShuRobotResponse.class);

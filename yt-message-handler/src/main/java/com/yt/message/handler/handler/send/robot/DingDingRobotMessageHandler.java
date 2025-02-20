@@ -62,8 +62,8 @@ public class DingDingRobotMessageHandler implements MessageHandler {
             httpPost.setHeader("Content-Type", "application/json");
             result = httpClient.execute(httpPost, new BasicHttpClientResponseHandler());
         } catch (Exception e) {
-           log.error("发送钉钉机器人消息失败,http请求异常",e);
-           return MessageSendResult.fail("发送钉钉机器人消息失败,http请求异常");
+           log.error("钉钉机器人发送消息失败,http请求异常",e);
+           return MessageSendResult.fail("钉钉机器人发送消息失败,http请求异常: "+e.getMessage());
         }
 
         DingDingRobotResponse response = JSONUtil.toBean(result, DingDingRobotResponse.class);

@@ -74,10 +74,10 @@ public class AlipayMiniProgramMessageHandler implements MessageHandler {
             // 签名
             httpPost.setHeader("authorization", getAuthorization(platformCache.getAppId(), platformCache.getHost(),postBodyStr, platformCache.getSecretKey()));
             //响应码大于等于300会抛出异常
-             httpClient.execute(httpPost, new BasicHttpClientResponseHandler());
+            httpClient.execute(httpPost, new BasicHttpClientResponseHandler());
         } catch (Exception e) {
-            log.error("发送钉钉机器人消息失败,http请求异常", e);
-            return MessageSendResult.fail("发送钉钉机器人消息失败,http请求异常");
+            log.error("支付宝小程序模板消息发送消息失败,http请求异常", e);
+            return MessageSendResult.fail("支付宝小程序模板消息发送消息失败,http请求异常: "+e.getMessage());
         }
 
 
