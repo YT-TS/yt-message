@@ -16,7 +16,7 @@ import java.util.Random;
  */
 @Component
 @Slf4j
-public class DadaGenJob {
+public class DataGenJob {
     @Autowired
     private IPreparedTemplateService preparedTemplateService;
 

@@ -186,7 +186,7 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 
         MessageType messageType = MessageType.getByCode(platform.getMessageType());
 
-        SendMessageRequest request = null;
+        SendMessageRequest request;
         String[] contentParams = stringArrayOptional(preparedTemplate.getContentParams());
         Set<String> receiveAccounts = new HashSet<>(stringSetOptional(preparedTemplate.getReceiveAccounts()));
 
@@ -197,32 +197,32 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
                     stringSetOptional(accountGroup.getMembers())
             );
         }
-        switch (messageType) {
-            case SMS:
-                request = SendMessageRequest.sendSMSMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .contentParams(contentParams)
-                        .receiveAccounts(receiveAccounts)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-            case EMAIL:
-                request = SendMessageRequest.sendEmailMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .subjectParams(stringArrayOptional(preparedTemplate.getSubjectParams()))
-                        .contentParams(contentParams)
-                        .receiveAccounts(receiveAccounts)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-            case ROBOT:
-                request = SendMessageRequest.sendRobotMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .contentParams(contentParams)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-        }
+        request = switch (messageType) {
+            case SMS -> SendMessageRequest.sendSMSMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case EMAIL -> SendMessageRequest.sendEmailMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .subjectParams(stringArrayOptional(preparedTemplate.getSubjectParams()))
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case ROBOT -> SendMessageRequest.sendRobotMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+        };
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);
         ExceptionAssert.throwOnFalse(messageSendRsp.getCode() == ResultCodeEnum.SUCCESS.getCode(), new BusinessException(messageSendRsp.getMsg()));
 
@@ -239,7 +239,7 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 
         MessageType messageType = MessageType.getByCode(platform.getMessageType());
 
-        SendMessageRequest request = null;
+        SendMessageRequest request;
         String[] contentParams = stringArrayOptional(preparedTemplate.getContentParams());
         Set<String> receiveAccounts = new HashSet<>(stringSetOptional(preparedTemplate.getReceiveAccounts()));
 
@@ -250,32 +250,32 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
                     stringSetOptional(accountGroup.getMembers())
             );
         }
-        switch (messageType) {
-            case SMS:
-                request = SendMessageRequest.sendSMSMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .contentParams(contentParams)
-                        .receiveAccounts(receiveAccounts)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-            case EMAIL:
-                request = SendMessageRequest.sendEmailMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .subjectParams(stringArrayOptional(preparedTemplate.getSubjectParams()))
-                        .contentParams(contentParams)
-                        .receiveAccounts(receiveAccounts)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-            case ROBOT:
-                request = SendMessageRequest.sendRobotMessageRequestBuilder()
-                        .templateId(template.getTemplateId())
-                        .contentParams(contentParams)
-                        .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                        .build();
-                break;
-        }
+        request = switch (messageType) {
+            case SMS -> SendMessageRequest.sendSMSMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case EMAIL -> SendMessageRequest.sendEmailMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .subjectParams(stringArrayOptional(preparedTemplate.getSubjectParams()))
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case ROBOT -> SendMessageRequest.sendRobotMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
+        };
         request.setForTest(true);
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);
         ExceptionAssert.throwOnFalse(messageSendRsp.getCode() == ResultCodeEnum.SUCCESS.getCode(), new BusinessException(messageSendRsp.getMsg()));

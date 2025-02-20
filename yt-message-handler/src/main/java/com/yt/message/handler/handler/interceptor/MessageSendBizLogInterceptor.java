@@ -33,10 +33,7 @@ public class MessageSendBizLogInterceptor implements MessageHandlerInterceptor {
             //发送失败业务日志
             BizLogUtils.log( messageSendPayload, MessageTrack.SEND_FAIL,ex);
         }
-        if (ex != null){
-            //错误日志
-            log.error("消息发送失败，消息id:{}", messageSendPayload.getMessageId(), ex);
-        }
+
 
     }
 
