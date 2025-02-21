@@ -29,7 +29,8 @@ import java.util.stream.Collectors;
 
 /**
  * @ClassName AlipayMiniProgramMessageHandler
- * @Description 支付宝小程序
+ * @Description 支付宝小程序订阅消息
+ * <a href="https://opendocs.alipay.com/open-v3/0136e987_alipay.open.app.mini.templatemessage.send">...</a>
  * @Author Ts
  * @Version 1.0
  */
@@ -76,8 +77,8 @@ public class AlipayMiniProgramMessageHandler implements MessageHandler {
             //响应码大于等于300会抛出异常
             httpClient.execute(httpPost, new BasicHttpClientResponseHandler());
         } catch (Exception e) {
-            log.error("支付宝小程序模板消息发送消息失败,http请求异常", e);
-            return MessageSendResult.fail("支付宝小程序模板消息发送消息失败,http请求异常: "+e.getMessage());
+            log.error("支付宝小程序订阅消息发送消息失败,http请求异常", e);
+            return MessageSendResult.fail("支付宝小程序订阅消息发送消息失败,http请求异常: "+e.getMessage());
         }
 
 
