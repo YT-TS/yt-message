@@ -131,8 +131,7 @@ YT-MESSAGE
 
 ### 10.效果演示
 
-<div style="display: flex;
-    align-items: flex-start;">
+<div style="display: flex;align-items: flex-start;">
     <img src="./doc/images/sms.jpg" style="margin-right: 10px;width: 150px;height:280px" >
     <img src="./doc/images/email.jpg" style="margin-right: 10px;width: 150px;height:280px" >
     <img src="./doc/images/feishu.jpg" style="margin-right: 10px;width: 150px;height:280px">
