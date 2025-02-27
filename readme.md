@@ -125,6 +125,10 @@ YT-MESSAGE
 
 ![error_log](doc/images/error_log.png)
 
+### 9.平台token池
+
+![tokenpool](doc/images/tokenpool.png)
+
 ### 10.效果演示
 
 <div style="display: flex;
