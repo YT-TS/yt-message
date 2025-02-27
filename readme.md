@@ -125,6 +125,18 @@ YT-MESSAGE
 
 ![error_log](doc/images/error_log.png)
 
+### 10.效果演示
+
+<div style="display: flex;
+    align-items: flex-start;">
+    <img src="./doc/images/sms.jpg" style="margin-right: 10px;width: 150px;height:280px" >
+    <img src="./doc/images/email.jpg" style="margin-right: 10px;width: 150px;height:280px" >
+    <img src="./doc/images/feishu.jpg" style="margin-right: 10px;width: 150px;height:280px">
+    <img src="./doc/images/dingding.jpg" style="margin-right: 10px;width: 150px;height:280px ">
+    <img src="./doc/images/wechat.jpg" style="margin-right: 10px;width: 150px;height:280px">
+    <img src="./doc/images/wechatofficialaccount.jpg" style="width: 150px;height:280px">
+</div>
+
 ## 项目部署
 
 待更新
