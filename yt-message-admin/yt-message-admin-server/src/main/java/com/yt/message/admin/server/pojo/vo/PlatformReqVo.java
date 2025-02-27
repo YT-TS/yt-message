@@ -1,16 +1,13 @@
 package com.yt.message.admin.server.pojo.vo;
 
 import com.yt.message.admin.server.pojo.vo.validation.AddPlatformGroupSequenceProvider;
-import com.yt.message.admin.server.pojo.vo.validation.group.EmailGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.RequiredRateLimitGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.SmsGroup;
+import com.yt.message.admin.server.pojo.vo.validation.group.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.group.GroupSequenceProvider;
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * @ClassName PlatformReqVo
@@ -60,7 +57,7 @@ public class PlatformReqVo  {
     /**
      * 应用id
      */
-    @NotBlank(groups = SmsGroup.class,message = "应用id不能为空")
+    @NotBlank(groups = {SmsGroup.class, WeChatOfficialAccountTemplateMessage.class},message = "应用id不能为空")
     private String appId;
 
     /**
@@ -72,7 +69,7 @@ public class PlatformReqVo  {
     /**
      * 访问key
      */
-    @NotBlank(groups = SmsGroup.class,message = "访问key不能为空")
+    @NotBlank(groups = {SmsGroup.class, WeChatOfficialAccountTemplateMessage.class},message = "访问key不能为空")
     private String secretKey;
 
     /**
@@ -83,7 +80,7 @@ public class PlatformReqVo  {
     /**
      * 请求服务器的地址
      */
-    @NotBlank(message = "请求服务器的地址不能为空")
+    @NotBlank(groups = {EmailGroup.class, SmsGroup.class, RobotGroup.class}, message = "请求服务器的地址不能为空")
     private String host;
 
     /**

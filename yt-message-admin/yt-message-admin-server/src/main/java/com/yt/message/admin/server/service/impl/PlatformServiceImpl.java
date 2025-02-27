@@ -133,6 +133,10 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
                 break;
             case ROBOT:
                 break;
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE:
+                updateWrapper.set(Platform::getAppId, reqVo.getAppId())
+                        .set(Platform::getSecretKey, reqVo.getSecretKey());
+                break;
         }
 
         ExceptionAssert.throwOnFalse(!this.existByNameAndId(reqVo.getPlatformName(),reqVo.getPlatformId()), new BusinessException("平台名已存在"));
@@ -158,8 +162,6 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
             platform.setRateLimitKey(reqVo.getRateLimitKey());
             platform.setRateLimitScale(reqVo.getRateLimitScale());
             platform.setRateLimitInterval(reqVo.getRateLimitInterval());
-
-
         }
 
         switch (messageType) {
@@ -174,6 +176,10 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
                 platform.setPort(reqVo.getPort());
                 break;
             case ROBOT:
+                break;
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE:
+                platform.setAppId(reqVo.getAppId());
+                platform.setSecretKey(reqVo.getSecretKey());
                 break;
         }
         ExceptionAssert.throwOnFalse(!this.existByNameAndId(platform.getPlatformName(),null), new BusinessException("平台名已存在"));

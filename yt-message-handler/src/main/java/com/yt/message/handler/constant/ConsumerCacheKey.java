@@ -9,7 +9,7 @@ import java.time.Duration;
 @AllArgsConstructor
 public enum ConsumerCacheKey implements ICacheKey {
 
-    REPEAT_CONSUME("REPEAT_CONSUME", Duration.ofSeconds(60)),
+    REPEAT_CONSUME("YT-MESSAGE:HANDLER:REPEAT_CONSUME", Duration.ofSeconds(60)),
 
 
     ;

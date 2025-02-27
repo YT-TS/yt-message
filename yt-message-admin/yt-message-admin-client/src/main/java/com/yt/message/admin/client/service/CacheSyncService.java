@@ -1,6 +1,7 @@
 package com.yt.message.admin.client.service;
 
 import com.yt.message.admin.client.pojo.dto.PlatformCache;
+import com.yt.message.admin.client.pojo.dto.PlatformToken;
 import com.yt.message.admin.client.pojo.dto.TemplateCache;
 
 /**
@@ -13,6 +14,8 @@ public interface CacheSyncService {
 
     PlatformCache syncPlatform(Long platformId);
     TemplateCache syncTemplate(Long templateId);
+    PlatformToken syncPlatformToken(Long platformId);
+
 
 
 

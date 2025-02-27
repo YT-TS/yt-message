@@ -14,7 +14,7 @@ import java.time.Duration;
 @Getter
 @AllArgsConstructor
 public enum CacheKey implements ICacheKey {
-    YT_STATISTICS_BIZ_AMOUNT("YT:STATISTICS_BIZ_AMOUNT", null);
+    YT_STATISTICS_BIZ_AMOUNT("YT-MESSAGE:COMMON:STATISTICS_BIZ_AMOUNT", null);
 
     private final String prefix;
     private final Duration expire;

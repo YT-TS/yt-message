@@ -22,7 +22,9 @@ public enum MessageType {
     SMS(1, "短信"),
     EMAIL(2,"邮箱"),
     ROBOT(3,"机器人"),
-    MINI_PROGRAM(4,"小程序订阅消息");
+//    MINI_PROGRAM(4,"小程序订阅消息"),
+    WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE(5,"微信公众号模板消息"),
+    ;
 
     private Integer code;
 

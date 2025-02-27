@@ -1,7 +1,7 @@
 import type { BasePageReqParams, PageRsp } from "../common/types";
 import { requestClient } from '#/api/request';
 export namespace accountApi {
-  export let baseUri = '/account-group'
+  export const baseUri = '/account-group'
 
   /** 分页参数 */
   export interface pageParams extends BasePageReqParams {

@@ -3,10 +3,7 @@ package com.yt.message.admin.server.pojo.vo.validation;
 
 import cn.hutool.core.util.StrUtil;
 import com.yt.message.admin.server.pojo.vo.PlatformReqVo;
-import com.yt.message.admin.server.pojo.vo.validation.group.EmailGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.RequiredRateLimitGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.RobotGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.SmsGroup;
+import com.yt.message.admin.server.pojo.vo.validation.group.*;
 import com.yt.message.common.enums.MessageType;
 import org.hibernate.validator.spi.group.DefaultGroupSequenceProvider;
 
@@ -30,6 +27,9 @@ public class AddPlatformGroupSequenceProvider implements DefaultGroupSequencePro
                         break;
                     case ROBOT:
                         defaultGroupSequence.add(RobotGroup.class);
+                        break;
+                    case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE:
+                        defaultGroupSequence.add(WeChatOfficialAccountTemplateMessage.class);
                         break;
                 }
             }

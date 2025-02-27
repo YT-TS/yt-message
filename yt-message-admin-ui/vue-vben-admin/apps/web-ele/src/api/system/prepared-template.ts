@@ -1,7 +1,7 @@
 import type { BasePageReqParams, PageRsp } from "../common/types";
 import { requestClient } from '#/api/request';
 export namespace preparedTemplateApi {
-  export let baseUri = '/preparedTemplate'
+  export const baseUri = '/preparedTemplate'
 
   /** 分页参数 */
   export interface pageParams extends BasePageReqParams {

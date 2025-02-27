@@ -49,6 +49,15 @@ const routes: RouteRecordRaw[] = [
           title: '预发送模板',
         },
       },
+      {
+        name: 'Token',
+        path: '/system/platform/token',
+        component: () => import('#/views/system/token/index.vue'),
+        meta: {
+          icon: 'icon-park-outline:recycling-pool',
+          title: '平台token池',
+        },
+      },
     ],
   },
 ];

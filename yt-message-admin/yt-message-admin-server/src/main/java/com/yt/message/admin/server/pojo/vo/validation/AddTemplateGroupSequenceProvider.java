@@ -2,7 +2,6 @@ package com.yt.message.admin.server.pojo.vo.validation;
 
 import com.yt.message.admin.server.pojo.vo.TemplateReqVo;
 import com.yt.message.admin.server.pojo.vo.validation.group.EmailGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.MiniProgramGroup;
 import com.yt.message.admin.server.pojo.vo.validation.group.RobotGroup;
 import com.yt.message.admin.server.pojo.vo.validation.group.SmsGroup;
 import com.yt.message.common.enums.MessageType;
@@ -35,9 +34,9 @@ public class AddTemplateGroupSequenceProvider implements DefaultGroupSequencePro
                     case ROBOT:
                         defaultGroupSequence.add(RobotGroup.class);
                         break;
-                    case MINI_PROGRAM:
-                        defaultGroupSequence.add(MiniProgramGroup.class);
-                        break;
+//                    case MINI_PROGRAM:
+//                        defaultGroupSequence.add(MiniProgramGroup.class);
+//                        break;
                 }
             }
         }

@@ -216,12 +216,13 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
                     .contentParams(contentParams)
                     .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
                     .build();
-            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
-                    .templateId(template.getTemplateId())
-                    .contentParams(contentParams)
-                    .receiveAccounts(receiveAccounts)
-                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                    .build();
+//            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
+//                    .templateId(template.getTemplateId())
+//                    .contentParams(contentParams)
+//                    .receiveAccounts(receiveAccounts)
+//                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+//                    .build();
+            default -> throw new BusinessException("不支持的消息类型");
         };
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);
         ExceptionAssert.throwOnFalse(messageSendRsp.getCode() == ResultCodeEnum.SUCCESS.getCode(), new BusinessException(messageSendRsp.getMsg()));
@@ -269,12 +270,13 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
                     .contentParams(contentParams)
                     .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
                     .build();
-            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
-                    .templateId(template.getTemplateId())
-                    .contentParams(contentParams)
-                    .receiveAccounts(receiveAccounts)
-                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
-                    .build();
+//            case MINI_PROGRAM -> SendMessageRequest.sendMiniProgramMessageRequestBuilder()
+//                    .templateId(template.getTemplateId())
+//                    .contentParams(contentParams)
+//                    .receiveAccounts(receiveAccounts)
+//                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+//                    .build();
+            default -> throw new BusinessException("不支持的消息类型");
         };
         request.setForTest(true);
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);

@@ -29,7 +29,7 @@
 
 
         <hutool.version>5.8.34</hutool.version>
-        <caffeine.version>2.9.3</caffeine.version>
+        <caffeine.version>3.2.0</caffeine.version>
         <javax.mail.version>1.6.2</javax.mail.version>
         <java-sms-sdk.version>1.0.4</java-sms-sdk.version>
         <rocketmq.version>5.3.1</rocketmq.version>

@@ -22,7 +22,8 @@ import java.util.HashMap;
 
 /**
  * @ClassName WeChatMiniProgramMessageHandler
-
+ * 微信小程序订阅消息
+<a href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/mp-message-management/subscribe-message/sendMessage.html">...</a>
  * @Author Ts
  * @Version 1.0
  */

@@ -161,6 +161,12 @@ const [Form, formApi] = useVbenForm({
       },
       fieldName: 'host',
       label: '服务器地址或webhook地址',
+      dependencies: {
+        if(values) {
+          return values.messageType == 1 || values.messageType == 2 || values.messageType == 3;
+        },
+        triggerFields: ['messageType'],
+      },
     },
     {
       component: 'InputNumber',
@@ -188,7 +194,7 @@ const [Form, formApi] = useVbenForm({
       label: '应用id',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == 1 || values.messageType == 5;
         },
         triggerFields: ['messageType'],
       },
@@ -216,17 +222,8 @@ const [Form, formApi] = useVbenForm({
       label: '访问密钥值或签名密钥',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 3;
+          return values.messageType == 1 || values.messageType == 3 || values.messageType == 5;
         },
-        // componentProps(values) {
-        //   if (values.messageType==3) {
-        //     return {
-        //       placeholder: '签名密钥',
-        //       label: '签名密钥',
-        //     };
-        //   }
-        //   return {};
-        // },
         triggerFields: ['messageType'],
       },
     },
@@ -336,6 +333,12 @@ const [AddForm] = useVbenForm({
       fieldName: 'host',
       label: '服务器地址或webhook 地址',
       rules: 'required',
+      dependencies: {
+        if(values) {
+          return values.messageType == 1 || values.messageType == 2 || values.messageType == 3;
+        },
+        triggerFields: ['messageType'],
+      },
     },
     {
       component: 'InputNumber',
@@ -364,7 +367,7 @@ const [AddForm] = useVbenForm({
       label: '应用id',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == 1 || values.messageType == 5;
         },
         triggerFields: ['messageType'],
       },
@@ -394,7 +397,7 @@ const [AddForm] = useVbenForm({
       label: '访问密钥值或签名密钥',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 3;
+          return values.messageType == 1 || values.messageType == 3 || values.messageType == 5;
         },
         triggerFields: ['messageType'],
       },

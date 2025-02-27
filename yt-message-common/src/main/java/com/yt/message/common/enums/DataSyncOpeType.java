@@ -11,6 +11,7 @@ public enum DataSyncOpeType {
     TEMPLATE_DELETE,
     PLATFORM_UPDATE,
     PLATFORM_DELETE,
+    PLATFORM_TOKEN_UPDATE,
     ;
 
 }
