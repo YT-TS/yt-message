@@ -16,7 +16,8 @@ import java.util.Arrays;
 @Getter
 public enum AccountType {
     PHONE(MessageType.SMS.getCode(), "手机号"),
-    EMAIL(MessageType.EMAIL.getCode(), "邮箱号")
+    EMAIL(MessageType.EMAIL.getCode(), "邮箱号"),
+    OPEN_ID(MessageType.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE.getCode(), "openid"),
     ;
     private Integer code;
     private String desc;

@@ -49,6 +49,7 @@ public class BizLogUtils {
             builder.addKeyValue(NOTE, exNote);
         }
         builder.log(messageTrack.getDesc());
+
     }
 
 

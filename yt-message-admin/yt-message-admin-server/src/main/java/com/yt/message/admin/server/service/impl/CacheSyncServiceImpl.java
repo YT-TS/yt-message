@@ -65,6 +65,7 @@ public class CacheSyncServiceImpl implements CacheSyncService {
 
     @Override
     public PlatformToken syncPlatformToken(Long platformId) {
+        log.info("同步token");
         HashOperations<String, String, Object> hashOperations = redisTemplate.opsForHash();
         Map<String, Object> valueMap = hashOperations.entries(CacheKey.PLATFORM_TOKEN.getKey(platformId));
         if (CollUtil.isNotEmpty(valueMap)) {

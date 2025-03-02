@@ -222,6 +222,12 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 //                    .receiveAccounts(receiveAccounts)
 //                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
 //                    .build();
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE -> SendMessageRequest.sendWeChatOfficialAccountMessageBuilder()
+                    .templateId(template.getTemplateId())
+                    .contentParams(contentParams)
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(preparedTemplate.getRequireAsync()))
+                    .build();
             default -> throw new BusinessException("不支持的消息类型");
         };
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);

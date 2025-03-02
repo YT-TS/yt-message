@@ -60,13 +60,13 @@ public class LocalCacheConfiguration  {
     public LoadingCache<Long, PlatformToken> platformTokenCache() {
 
         LoadingCache<Long, PlatformToken> cache = Caffeine.newBuilder()
-                .initialCapacity(TEMPLATE_CACHE_INITIAL_CAPACITY)
-                .maximumSize(TEMPLATE_CACHE_MAXIMUM_CAPACITY)
+                .initialCapacity(PLATFORM_TOKEN_CACHE_INITIAL_CAPACITY)
+                .maximumSize(PLATFORM_TOKEN_CACHE_MAXIMUM_CAPACITY)
                 .expireAfter(new Expiry<Long, PlatformToken>() {
                     @Override
                     public long expireAfterCreate(Long key, PlatformToken value, long currentTime) {
                         Long expireTimestamp = value.getExpireTimestamp();
-                        return currentTime - expireTimestamp * 1000;
+                        return expireTimestamp * 1000 - currentTime;
                     }
 
                     @Override

@@ -132,6 +132,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 //                updateWrapper.set(Template::getPage, reqVo.getPage());
 //                updateWrapper.set(Template::getPlatformTemplateId, reqVo.getPlatformTemplateId());
 //                break;
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE:
+                updateWrapper.set(Template::getPlatformTemplateId, reqVo.getPlatformTemplateId());
+                break;
             default:
                 throw new BusinessException("不支持的消息类型");
         }
@@ -201,6 +204,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 //                template.setPage(reqVo.getPage());
 //                template.setPlatformTemplateId(reqVo.getPlatformTemplateId());
 //                break;
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE:
+                template.setPlatformTemplateId(reqVo.getPlatformTemplateId());
+                break;
             default:
                 throw new BusinessException("不支持的消息类型");
         }
@@ -288,6 +294,12 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 //                    .receiveAccounts(receiveAccounts)
 //                    .requireAsync(YesOrNoEnum.YES.getValue().equals(reqVo.getRequireAsync()))
 //                    .build();
+            case WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE -> SendMessageRequest.sendWeChatOfficialAccountMessageBuilder()
+                    .templateId(reqVo.getTemplateId())
+                    .contentParams(reqVo.getContentParams())
+                    .receiveAccounts(receiveAccounts)
+                    .requireAsync(YesOrNoEnum.YES.getValue().equals(reqVo.getRequireAsync()))
+                    .build();
             default -> throw new BusinessException("不支持的消息类型");
         };
         MessageSendRsp messageSendRsp = messageService.sendMessage(request);

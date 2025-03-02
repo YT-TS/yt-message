@@ -20,5 +20,10 @@ public class LocalCacheConstant {
     public static final Duration TEMPLATE_CACHE_EXPIRE_TIME = Duration.ofDays(5);
 
 
+    public static final int PLATFORM_TOKEN_CACHE_INITIAL_CAPACITY  = 10;
+    public static final int PLATFORM_TOKEN_CACHE_MAXIMUM_CAPACITY  = 30;
+
+
+
 
 }

@@ -210,14 +210,13 @@ const [SendForm, sendFormApi] = useVbenForm({
       },
       help: '回车输入下一个'
     },
-
     {
       component: 'InputTag',
       // 字段名
       fieldName: 'contentParams',
       // 界面显示的label
-      label: '内容参数',
-      help: '回车输入下一个'
+      label: '内容参数值',
+      help: '回车输入下一个',
     },
     {
       component: 'Input',
@@ -337,7 +336,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == 1 || values.messageType == 5;
         },
         triggerFields: ['messageType'],
       },
@@ -346,6 +345,7 @@ const [EditForm, editFormApi] = useVbenForm({
       // 界面显示的label
       label: '三方平台模板id',
       rules: 'required',
+      help: '如果三方平台模板有参数,请以keyword1、keyword2、keyword3  ...命名'
     },
     {
       component: 'Input',
@@ -572,15 +572,16 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == 1 || values.messageType == 5;
         },
         triggerFields: ['messageType'],
       },
       // 字段名
       fieldName: 'platformTemplateId',
-      // 界面显示的label
+      // 界面显示的label吗， 
       label: '三方平台模板id',
       rules: 'required',
+      help: '如果三方平台模板有参数,请以keyword1、keyword2、keyword3  ...命名'
     },
     {
       component: 'Input',

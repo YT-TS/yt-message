@@ -1,10 +1,7 @@
 package com.yt.message.admin.server.pojo.vo;
 
 import com.yt.message.admin.server.pojo.vo.validation.AddTemplateGroupSequenceProvider;
-import com.yt.message.admin.server.pojo.vo.validation.group.EmailGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.MiniProgramGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.RobotGroup;
-import com.yt.message.admin.server.pojo.vo.validation.group.SmsGroup;
+import com.yt.message.admin.server.pojo.vo.validation.group.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -53,7 +50,7 @@ public class TemplateReqVo {
     /**
      * 对应第三方平台模板id
      */
-    @NotBlank(groups = SmsGroup.class, message = "第三方平台模板id不能为空")
+    @NotBlank(groups = {SmsGroup.class, WeChatOfficialAccountTemplateMessage.class}, message = "第三方平台模板id不能为空")
     private String platformTemplateId;
 
 

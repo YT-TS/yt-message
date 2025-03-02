@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * @ClassName PlatformTokenUtil
- * @Description TODO
  * @Author Ts
  * @Version 1.0
  */

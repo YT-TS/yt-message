@@ -191,7 +191,7 @@ const [AddForm, addFormApi] = useVbenForm({
       // 字段名
       fieldName: 'contentParams',
       // 界面显示的label
-      label: '模板内容参数',
+      label: '模板内容参数值',
       help: '回车输入下一个'
     },
     {
@@ -345,7 +345,7 @@ const [EditForm, editFormApi] = useVbenForm({
       // 字段名
       fieldName: 'contentParams',
       // 界面显示的label
-      label: '模板内容参数',
+      label: '模板内容参数值',
       help: '回车输入下一个'
     },
     {

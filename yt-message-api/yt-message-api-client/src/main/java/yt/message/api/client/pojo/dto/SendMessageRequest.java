@@ -134,6 +134,10 @@ public class SendMessageRequest implements Serializable {
         return new SendMiniProgramMessageRequestBuilder();
     }
 
+    public static SendWeChatOfficialAccountMessageBuilder sendWeChatOfficialAccountMessageBuilder() {
+        return new SendWeChatOfficialAccountMessageBuilder();
+    }
+
 
 
     public static class SendSMSMessageRequestBuilder extends BaseBuilder {
@@ -270,6 +274,43 @@ public class SendMessageRequest implements Serializable {
 
         public SendMessageRequest build() {
             return new SendMessageRequest(templateId, receiveAccount,receiveAccounts,null,contentParams,single, MessageType.SMS.getCode(),requireAsync);
+        }
+    }
+
+    public static class SendWeChatOfficialAccountMessageBuilder extends BaseBuilder{
+        private SendWeChatOfficialAccountMessageBuilder() {
+        }
+
+        public SendWeChatOfficialAccountMessageBuilder templateId(Long templateId) {
+
+            this.templateId = templateId;
+            return this;
+        }
+
+        public SendWeChatOfficialAccountMessageBuilder receiveAccount(String receiveAccount) {
+            this.receiveAccount = receiveAccount;
+            this.single = true;
+            return this;
+        }
+        public SendWeChatOfficialAccountMessageBuilder receiveAccounts(Set<String> receiveAccounts) {
+            this.receiveAccounts = receiveAccounts;
+            this.single = false;
+            return this;
+        }
+
+
+        public SendWeChatOfficialAccountMessageBuilder contentParams(String[] contentParams) {
+            this.contentParams = contentParams;
+            return this;
+        }
+        public SendWeChatOfficialAccountMessageBuilder requireAsync(boolean requireAsync) {
+            this.requireAsync = requireAsync ? YesOrNoEnum.YES.getValue() : YesOrNoEnum.NO.getValue();
+            return this;
+        }
+
+
+        public SendMessageRequest build() {
+            return new SendMessageRequest(templateId, receiveAccount,receiveAccounts,null,contentParams,single, MessageType.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE.getCode(),requireAsync);
         }
     }
 

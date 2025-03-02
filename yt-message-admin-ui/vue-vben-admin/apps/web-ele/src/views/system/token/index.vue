@@ -38,7 +38,7 @@ tokenList()
       <el-table-column type="index" />
       <el-table-column prop="platformId" label="平台" :formatter="platformFormatter" />
       <el-table-column prop="expireTimestamp" label="到期时间" :formatter="expireTimestampFormatter" />
-      <<el-table-column label="operations">
+      <<el-table-column label="操作">
         <template #default="scope">
           <el-popconfirm title="确定要删除吗?" @confirm="updateToken(scope.row)">
             <template #reference>
