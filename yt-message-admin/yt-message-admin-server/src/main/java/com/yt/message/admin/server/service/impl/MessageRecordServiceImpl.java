@@ -49,6 +49,28 @@ public class MessageRecordServiceImpl implements IMessageRecordService {
                 "size":{}
             }
             """;
+    private static final String trackPostBody = """
+            {
+                "query": "{}",
+                "streams":["{}"],
+                "fields": [
+                    "biz_id",
+                    "hand_timestamp",
+                    "step",
+                    "receive_account",
+                    "template_id",
+                    "note"
+                ],
+                "timerange": {
+                    "type": "keyword",
+                    "keyword": "Last fifteen days"
+                },
+                "sort": "hand_timestamp",
+                "sort_order": "asc",
+                "from": {},
+                "size":{}
+            }
+            """;
     private static final String queryString = "(step:" + MessageTrack.ISSUE_SUCCESS.getCode() + " OR step:\\\\" + MessageTrack.ISSUE_FAIL.getCode() + ")";
 
     @Override
@@ -88,7 +110,7 @@ public class MessageRecordServiceImpl implements IMessageRecordService {
     @Override
     public String track(Long messageId) throws IOException {
         String query = "biz_id:" + messageId;
-        String body = StrUtil.format(postBody, query, bizStreamId, 0, 10);
+        String body = StrUtil.format(trackPostBody, query, bizStreamId, 0, 10);
         return grayLogRequestService.post(body);
     }
 
