@@ -41,12 +41,20 @@ public class BizLogUtils {
                 .addKeyValue(RECEIVE_ACCOUNT_FIELD, messageSendPayload.getReceiveAccount())
                 .addKeyValue(TEMPLATE_ID_FIELD, messageSendPayload.getTemplateId())
                 .addMarker(bizMarker);
+        String errMsg = null;
         if (note != null) {
+            errMsg = note;
             builder.addKeyValue(NOTE, note);
         }else if (e != null) {
             StackTraceElement[] stackTrace = e.getStackTrace();
             String exNote = e + "\n" + stackTrace[0];
+            errMsg = exNote;
             builder.addKeyValue(NOTE, exNote);
+        }
+
+        if(messageTrack.equals(MessageTrack.ISSUE_FAIL) || messageTrack.equals(MessageTrack.SEND_FAIL)){
+            builder.log(messageTrack.getDesc() + errMsg );
+            return;
         }
         builder.log(messageTrack.getDesc());
 

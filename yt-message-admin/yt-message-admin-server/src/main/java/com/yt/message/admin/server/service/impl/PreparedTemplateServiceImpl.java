@@ -86,8 +86,8 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 
     @Override
     public void add(PreparedTemplateReqVo reqVo) throws Exception {
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+        MessageType messageType = Optional.ofNullable(MessageType.getByCode(reqVo.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数: messageType"));
         PreparedTemplate preparedTemplate = new PreparedTemplate();
         if (messageType != MessageType.ROBOT) {
             //接受账户存在性校验
@@ -105,15 +105,25 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
             //账户组校验
             if (reqVo.getAccountGroupId() != null) {
                 //接受账户组存在性校验
-                AccountGroup accountGroup = accountGroupMapper.selectOne(new LambdaQueryWrapper<AccountGroup>().select(AccountGroup::getGroupId, AccountGroup::getType).eq(AccountGroup::getGroupId, reqVo.getAccountGroupId()));
-                ExceptionAssert.throwOnFalse(accountGroup != null, new IllegalRequestException("接受账户组不存在"));
+
+                AccountGroup accountGroup = Optional.ofNullable(accountGroupMapper.selectOne(new LambdaQueryWrapper<AccountGroup>().select(AccountGroup::getGroupId, AccountGroup::getType).eq(AccountGroup::getGroupId, reqVo.getAccountGroupId()))).orElseThrow(() -> new IllegalRequestException("接受账户组不存在: " + reqVo.getAccountGroupId()));
+
                 //账户组格式校验
                 ExceptionAssert.throwOnFalse(reqVo.getMessageType().equals(accountGroup.getType()), new BusinessException("接受账户组格式与模板不匹配"));
                 preparedTemplate.setAccountGroupId(reqVo.getAccountGroupId());
             }
         }
-        //模板存在性校验
-        ExceptionAssert.throwOnFalse(templateMapper.exists(new LambdaQueryWrapper<Template>().eq(Template::getTemplateId, reqVo.getTemplateId())), new IllegalRequestException("模板不存在"));
+        //模板，平台校验
+        Template template = templateMapper.selectOne(new LambdaQueryWrapper<Template>().select(Template::getTemplateId, Template::getPlatformId, Template::getStatus).eq(Template::getTemplateId, reqVo.getTemplateId()));
+        Integer templateStatus = Optional.ofNullable(template)
+                .map(Template::getStatus)
+                .orElseThrow(() -> new IllegalRequestException("消息模板不存在：" + reqVo.getTemplateId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(templateStatus), new BusinessException("该消息模板已禁用"));
+        Platform platform = platformMapper.selectOne(new LambdaQueryWrapper<Platform>().select(Platform::getPlatformId, Platform::getStatus).eq(Platform::getPlatformId, template.getPlatformId()));
+        Integer platformStatus = Optional.ofNullable(platform)
+                .map(Platform::getStatus)
+                .orElseThrow(() -> new IllegalRequestException("消息平台不存在：" + template.getPlatformId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(platformStatus), new BusinessException("该消息平台已禁用"));
 
 
         preparedTemplate.setTemplateName(reqVo.getTemplateName());
@@ -158,8 +168,7 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
             //账户组校验
             if (reqVo.getAccountGroupId() != null) {
                 //接受账户组存在性校验
-                AccountGroup accountGroup = accountGroupMapper.selectOne(new LambdaQueryWrapper<AccountGroup>().select(AccountGroup::getGroupId, AccountGroup::getType).eq(AccountGroup::getGroupId, reqVo.getAccountGroupId()));
-                ExceptionAssert.throwOnFalse(accountGroup != null, new IllegalRequestException("接受账户组不存在"));
+                AccountGroup accountGroup = Optional.ofNullable(accountGroupMapper.selectOne(new LambdaQueryWrapper<AccountGroup>().select(AccountGroup::getGroupId, AccountGroup::getType).eq(AccountGroup::getGroupId, reqVo.getAccountGroupId()))).orElseThrow(() -> new IllegalRequestException("接受账户组不存在: " + reqVo.getAccountGroupId()));
                 //账户组格式校验
                 ExceptionAssert.throwOnFalse(reqVo.getMessageType().equals(accountGroup.getType()), new BusinessException("接受账户组格式与模板不匹配"));
             }
@@ -177,11 +186,14 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 
     @Override
     public void send(Long preparedTemplateId) throws Exception {
-        PreparedTemplate preparedTemplate = this.getById(preparedTemplateId);
-        ExceptionAssert.throwOnFalse(preparedTemplate != null, new IllegalRequestException("模板不存在"));
+        PreparedTemplate preparedTemplate = Optional.ofNullable(this.getById(preparedTemplateId))
+                .orElseThrow(()->new IllegalRequestException("模板不存在: "+ preparedTemplateId));
 
-        Template template = templateMapper.selectById(preparedTemplate.getTemplateId());
-        Platform platform = platformMapper.selectById(template.getPlatformId());
+
+        Template template = templateMapper.selectOne(new LambdaQueryWrapper<Template>().select(Template::getStatus, Template::getTemplateId,Template::getPlatformId).eq(Template::getTemplateId, preparedTemplate.getTemplateId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(template.getStatus()), new BusinessException("该消息模板已禁用"));
+        Platform platform = platformMapper.selectOne(new LambdaQueryWrapper<Platform>().select(Platform::getPlatformId,Platform::getStatus,Platform::getMessageType).eq(Platform::getPlatformId,template.getPlatformId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(platform.getStatus()), new BusinessException("该平台已禁用"));
 
 
         MessageType messageType = MessageType.getByCode(platform.getMessageType());
@@ -237,8 +249,8 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
 
     @Override
     public void sendForTest(Long preparedTemplateId) throws Exception {
-        PreparedTemplate preparedTemplate = this.getById(preparedTemplateId);
-        ExceptionAssert.throwOnFalse(preparedTemplate != null, new IllegalRequestException("模板不存在"));
+        PreparedTemplate preparedTemplate = Optional.ofNullable(this.getById(preparedTemplateId))
+                .orElseThrow(()->new IllegalRequestException("模板不存在: "+ preparedTemplateId));
 
         Template template = templateMapper.selectById(preparedTemplate.getTemplateId());
         Platform platform = platformMapper.selectById(template.getPlatformId());

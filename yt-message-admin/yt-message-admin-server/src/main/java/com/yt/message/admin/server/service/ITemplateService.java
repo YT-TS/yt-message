@@ -7,6 +7,7 @@ import com.yt.message.admin.server.pojo.dto.PageResult;
 import com.yt.message.admin.server.pojo.entity.Template;
 
 import com.yt.message.admin.server.pojo.vo.*;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -33,10 +34,12 @@ public interface ITemplateService extends IService<Template> {
 
     void send(MessageSendVo reqVo) throws Exception;
 
-    List<Dic<String>> dic();
+    List<Dic<String>> dic(Integer status);
 
     String getTemplateName(Long templateId);
 
 
-    List<OneLayerTreeDic<String,String>> PlatformAndTemplate();
+    List<OneLayerTreeDic<String,String>> PlatformAndTemplate(@PathVariable(required = false) Integer status);
+
+    void status(TemplateStatusEditVo reqVo);
 }

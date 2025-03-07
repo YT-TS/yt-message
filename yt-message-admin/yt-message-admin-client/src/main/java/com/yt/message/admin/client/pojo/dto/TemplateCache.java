@@ -114,4 +114,6 @@ public class TemplateCache implements Serializable {
      * 微信公众号模板消息跳转小程序的页面地址或者外部url链接
      */
     private String page;
+
+    private Integer status;
 }

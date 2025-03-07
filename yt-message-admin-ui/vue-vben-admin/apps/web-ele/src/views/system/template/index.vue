@@ -3,7 +3,7 @@
     <Grid>
       <template #action="{ row }">
         <div class=" flex  justify-evenly justify-around">
-          <el-link type="info" @click="send(row)">便捷发送</el-link>
+          <el-link type="info" @click="send(row)" :disabled="row.status == 0">便捷发送</el-link>
           <el-link type="primary" @click="edit(row)">编辑</el-link>
           <el-popconfirm title="确定要删除吗?" @confirm="handleDelete(row)">
             <template #reference>
@@ -14,6 +14,10 @@
       </template>
       <template #toolbar-tools>
         <el-button type="primary" @click="add">新增</el-button>
+      </template>
+      <template #status="{ row }">
+        <el-switch v-model="row.status" :active-value="1" @change="updateStatus($event, row)" :inactive-value="0"
+          active-text="启用" inactive-text="禁用" :inline-prompt="true" />
       </template>
     </Grid>
     <EditModal title="编辑">
@@ -32,12 +36,13 @@ import { dic, type Dic, type OneLayerTreeDic, treeDic } from '#/api/dic'
 import { computed, ref, reactive, h } from 'vue';
 import { useVbenVxeGrid, type VxeGridProps } from '#/adapter/vxe-table';
 import type { templateApi } from '#/api/system/template';
-import { page as templatePage, update, create, remove, sendMessage } from '#/api/system/template';
+import { page as templatePage, update, create, remove, sendMessage, status } from '#/api/system/template';
 import { useVbenForm, type VbenFormProps } from '#/adapter/form';
 import Codemirror from "codemirror-editor-vue3";
 import {
   ElLink,
   ElButton,
+  ElSwitch,
   ElMessage,
   ElPopconfirm,
 } from 'element-plus';
@@ -51,6 +56,7 @@ dic('messageUsage').then(res => messageUsageDic.value = res);
 //获取消息类型-平台字典
 let plateformDic = reactive<OneLayerTreeDic<number, string>[]>([]);
 treeDic('platform').then(res => plateformDic = res);
+
 const yesValue = ref();
 const noValue = ref();
 dic('yesOrNo').then(res => {
@@ -81,14 +87,19 @@ const gridOptions: VxeGridProps<templateApi.TemplateRsp> = {
         const item = messageUsageDic.value.find(item => item.value === cellValue)
         return item ? item.label : cellValue
       }
-    }, 
+    },
     {
       field: 'platformId', title: '消息平台',
       formatter: (params) => {
-        return findPlatformName(plateformDic,params.cellValue)
+        return findPlatformName(plateformDic, params.cellValue)
       }
     },
     { field: 'createTime', title: '创建时间' },
+    {
+      field: 'status',
+      title: '状态',
+      slots: { default: 'status' }
+    },
     {
       field: 'action',
       slots: { default: 'action' },
@@ -773,12 +784,12 @@ async function add() {
 }
 //提交编辑
 async function handleEdit(row: any) {
-  if(row.requireRateLimit == 1){
-    if(!row.rateLimitStrategy){
+  if (row.requireRateLimit == 1) {
+    if (!row.rateLimitStrategy) {
       ElMessage.error('限流参数为空');
       return;
     }
-  }else{
+  } else {
     row.rateLimitStrategy = null
   }
   // console.log(row)
@@ -795,18 +806,18 @@ async function handleEdit(row: any) {
 }
 //提交添加
 async function handleAdd(row: any) {
-  if(row.requireRateLimit == 1){
-    if(!row.rateLimitStrategy){
+  if (row.requireRateLimit == 1) {
+    if (!row.rateLimitStrategy) {
       ElMessage.error('限流参数为空');
       return;
     }
-  }else{
+  } else {
     row.rateLimitStrategy = null
   }
   if (Array.isArray(row.platformId)) {
     row.platformId = row.platformId[1]
   }
-  
+
   create(row).then(() => {
     ElMessage.success('添加成功');
     addModalApi.close()
@@ -855,6 +866,18 @@ function findPlatformName(plateformDic: OneLayerTreeDic<number, string>[], platf
     }
   }
   return ''
+}
+function updateStatus(e: any, row: any) {
+  status({
+    templateId: row.templateId,
+    status: e,
+    version: row.version
+  }).then(() => {
+    ElMessage.success('修改成功');
+    gridApi.query()
+  }).catch(() => {
+    gridApi.query()
+  })
 }
 </script>
 <style lang="css">

@@ -12,6 +12,7 @@ import com.yt.message.common.enums.RateLimitStrategy;
 import com.yt.message.common.enums.YesOrNoEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,25 +48,39 @@ public class DicController {
     public List<Dic<Integer>> yesOrNo(){
         return Arrays.stream(YesOrNoEnum.values()).map(item->new Dic<>(item.name(), item.getValue())).collect(Collectors.toList());
     }
-    @GetMapping("/template")
-    public List<Dic<String>> template(){
-        return templateService.dic();
+    @GetMapping({"/template","/template/{status}"})
+    public List<Dic<String>> template(@PathVariable(required = false,name = "status") Integer status ){
+        return templateService.dic(status);
     }
-    @GetMapping("/platform")
-    public List<Dic<String>> platform(){
-        return platformService.dic();
+    @GetMapping({"/platform","/platform/{status}"})
+    public List<Dic<String>> platform(@PathVariable(required = false,name = "status") Integer status){
+        return platformService.dic(status);
     }
-    @GetMapping("/tree/PlatformAndTemplate")
-    public List<OneLayerTreeDic<String,String>> PlatformAndTemplate(){
-        return templateService.PlatformAndTemplate();
+    /*
+        platform1
+            template1
+        platform2
+            template2
+            template3
+    */
+    @GetMapping({"/tree/PlatformAndTemplate/{status}","/tree/PlatformAndTemplate"})
+    public List<OneLayerTreeDic<String,String>> PlatformAndTemplate(@PathVariable(required = false,name = "status") Integer status){
+        return templateService.PlatformAndTemplate(status);
     }
     @GetMapping("/accountGroup")
     public List<Dic<String>> accountGroup(){
         return accountGroupService.dic();
     }
-    @GetMapping("/tree/platform")
-    public List<OneLayerTreeDic<Integer,String>> platformTreeDic(){
-        return platformService.treeDic();
+    /*
+        type1
+            platform1
+        type2
+            platform2
+            platform3
+    */
+    @GetMapping({"/tree/platform/{status}","/tree/platform"})
+    public List<OneLayerTreeDic<Integer,String>> platformTreeDic(@PathVariable(required = false,name = "status") Integer status){
+        return platformService.treeDic(status);
 
     }
     @GetMapping("/accountType")

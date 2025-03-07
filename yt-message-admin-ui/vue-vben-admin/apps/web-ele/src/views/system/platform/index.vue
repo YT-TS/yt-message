@@ -14,6 +14,9 @@
       <template #toolbar-tools>
         <el-button type="primary" @click="add">新增</el-button>
       </template>
+      <template #status="{row}">
+        <el-switch v-model="row.status" :active-value="1" @change="updateStatus($event,row)"  :inactive-value="0" active-text="启用" inactive-text="禁用" :inline-prompt="true"/>
+      </template>
     </Grid>
     <Modal title="编辑">
       <Form />
@@ -28,14 +31,15 @@
 import type { VxeGridProps } from '#/adapter/vxe-table';
 import type { VbenFormProps } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { page as platformPage, update, add as create, remove } from '#/api/system/platform';
+import { page as platformPage, update, add as create, remove,status } from '#/api/system/platform';
 import { platformApi } from '#/api/system/platform'
 import { dic, type Dic } from '#/api/dic'
 import {
   ElLink,
   ElButton,
   ElMessage,
-  ElPopconfirm
+  ElPopconfirm,
+  ElSwitch,
 } from 'element-plus';
 import { ref, computed } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
@@ -73,6 +77,11 @@ const gridOptions: VxeGridProps<platformApi.PlatformRsp> = {
       }
     },
     { field: 'createTime', title: '创建时间' },
+    {
+      field:'status',
+      title: '状态',
+      slots:{default:'status'}
+    },
     {
       field: 'action',
       slots: { default: 'action' },
@@ -401,7 +410,6 @@ const [AddForm] = useVbenForm({
         },
         triggerFields: ['messageType'],
       },
-      rules: 'required',
     },
     {
       component: 'Input',
@@ -502,7 +510,19 @@ async function handleDelete(row: any) {
 
 }
 
-
+//更新状态
+function updateStatus(e: any,row:any) {
+  status({
+    platformId: row.platformId,
+    status: e,
+    version: row.version
+  }).then(() => {
+    ElMessage.success('修改成功');
+    gridApi.query()
+  }).catch(() => { 
+    gridApi.query()
+  })
+}
 
 
 

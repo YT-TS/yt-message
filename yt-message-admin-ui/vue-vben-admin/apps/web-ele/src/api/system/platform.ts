@@ -34,3 +34,7 @@ export async function add(data: any) {
 export async function remove(id : string) {
   return requestClient.delete(platformApi.baseUri + '/' + id)
 }
+export async function status(data:any) {
+  return requestClient.patch(platformApi.baseUri + '/status', data)
+  
+}

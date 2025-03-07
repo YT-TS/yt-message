@@ -17,8 +17,7 @@ public class MessageSendVo {
     private String receiveAccounts;
     private Long accountGroupId;
 
-    @NotNull(message = "消息类型不能为空")
-    private Integer messageType;
+
 
     @NotNull(message = "是否异步不能为空")
     private Integer requireAsync;

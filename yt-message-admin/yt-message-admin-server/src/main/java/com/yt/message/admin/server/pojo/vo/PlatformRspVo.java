@@ -85,6 +85,7 @@ public class PlatformRspVo {
      */
 
     private String handlerName;
+    private Integer status;
 
     private Integer version;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

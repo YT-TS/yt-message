@@ -26,7 +26,7 @@ public class TemplateController {
     private ITemplateService templateService;
 
     @PostMapping("/page")
-    public PageResult<TemplateRspVo> page(@RequestBody TemplatePageReqVo reqVo) {
+    public PageResult<TemplateRspVo> pamge(@RequestBody TemplatePageReqVo reqVo) {
         return templateService.page(reqVo);
     }
     @PutMapping
@@ -44,6 +44,10 @@ public class TemplateController {
     @PostMapping("/send")
     public void send(@RequestBody @Validated MessageSendVo reqVo) throws Exception {
         templateService.send(reqVo);
+    }
+    @PatchMapping("/status")
+    public void status(@RequestBody @Validated TemplateStatusEditVo reqVo) throws Exception {
+        templateService.status(reqVo);
     }
 
 }

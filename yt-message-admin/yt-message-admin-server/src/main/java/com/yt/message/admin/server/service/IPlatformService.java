@@ -5,10 +5,7 @@ import com.yt.message.admin.server.pojo.dto.Dic;
 import com.yt.message.admin.server.pojo.dto.OneLayerTreeDic;
 import com.yt.message.admin.server.pojo.dto.PageResult;
 import com.yt.message.admin.server.pojo.entity.Platform;
-import com.yt.message.admin.server.pojo.vo.PlatformEditReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformPageReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformRspVo;
+import com.yt.message.admin.server.pojo.vo.*;
 
 import java.util.List;
 
@@ -34,9 +31,11 @@ public interface IPlatformService extends IService<Platform> {
 
     void add(PlatformReqVo reqVo) throws Exception;
 
-    List<OneLayerTreeDic<Integer,String>>  treeDic();
+    List<OneLayerTreeDic<Integer,String>>  treeDic(Integer status);
 
-    List<Dic<String>> dic();
+    List<Dic<String>> dic(Integer status);
 
     String getPlatformName(long l);
+
+    void status(PlatformStatusEditVo reqVo) throws Exception;
 }

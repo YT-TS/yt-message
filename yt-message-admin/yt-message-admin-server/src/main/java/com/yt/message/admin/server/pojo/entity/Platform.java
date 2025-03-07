@@ -94,4 +94,9 @@ public class Platform extends  BaseEntity implements Serializable {
 
     private Integer version;
 
+    /**
+     * 状态
+     */
+    private Integer status;
+
 }

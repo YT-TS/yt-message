@@ -117,3 +117,6 @@ export async function remove(id : string) {
 export async function sendMessage(data: any) {
   return requestClient.post(templateApi.baseUri+'/send', data)
 }
+export async function status(data: any) {
+  return requestClient.patch(templateApi.baseUri+'/status', data)
+}

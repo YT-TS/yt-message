@@ -33,8 +33,7 @@ public class DataSyncLocalTransactionListener implements RocketMQLocalTransactio
     @Override
     public RocketMQLocalTransactionState executeLocalTransaction(Message msg, Object arg) {
         Boolean result = null;
-        if (arg instanceof Supplier<?>) {
-            Supplier<?> supplier = (Supplier<?>) arg;
+        if (arg instanceof Supplier<?> supplier) {
             try {
                 Object o = supplier.get();
                 if (o instanceof Boolean) {
@@ -62,24 +61,27 @@ public class DataSyncLocalTransactionListener implements RocketMQLocalTransactio
     public RocketMQLocalTransactionState checkLocalTransaction(Message msg) {
         DataSyncMessagePayload payload = JSONUtil.toBean(new String((byte[]) msg.getPayload()), DataSyncMessagePayload.class);
         long count;
-        switch (payload.getType()) {
-            case PLATFORM_DELETE:
+        return switch (payload.getType()) {
+            case PLATFORM_DELETE -> {
                 //检查是否存在 来判断是否删除成功
                 count = platformService.count(new LambdaQueryWrapper<Platform>().eq(Platform::getPlatformId, payload.getId()));
-                return count == 0 ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
-            case PLATFORM_UPDATE:
-                //检查版本号 来判断是否更新成功
+                yield count == 0 ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
+            }
+            case PLATFORM_UPDATE -> {
+                //检查版本号 来判断是否更新成功 不等于就算是更新成功
                 Platform platform = platformService.getOne(new LambdaQueryWrapper<Platform>().select(Platform::getVersion).eq(Platform::getPlatformId, payload.getId()));
-                return !platform.getVersion().equals(payload.getVersion()) ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
-            case TEMPLATE_DELETE:
-                log.info("删除模板");
+                yield !platform.getVersion().equals(payload.getVersion()) ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
+            }
+            case TEMPLATE_DELETE -> {
                 count = templateService.count(new LambdaQueryWrapper<Template>().eq(Template::getTemplateId, payload.getId()));
-                return count == 0 ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
-            case TEMPLATE_UPDATE:
+                yield count == 0 ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
+            }
+            case TEMPLATE_UPDATE -> {
                 Template template = templateService.getOne(new LambdaQueryWrapper<Template>().select(Template::getVersion).eq(Template::getTemplateId, payload.getId()));
-                return !template.getVersion().equals(payload.getVersion()) ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
-        }
-        return RocketMQLocalTransactionState.COMMIT;
+                yield !template.getVersion().equals(payload.getVersion()) ? RocketMQLocalTransactionState.COMMIT : RocketMQLocalTransactionState.ROLLBACK;
+            }
+            default -> RocketMQLocalTransactionState.COMMIT;
+        };
     }
 
 

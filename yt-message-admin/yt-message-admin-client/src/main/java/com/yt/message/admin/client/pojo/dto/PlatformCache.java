@@ -84,4 +84,6 @@ public class PlatformCache implements Serializable {
 
     private String handlerName;
 
+    private Integer status;
+
 }

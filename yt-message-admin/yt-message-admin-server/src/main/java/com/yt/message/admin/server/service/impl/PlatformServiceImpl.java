@@ -16,10 +16,7 @@ import com.yt.message.admin.server.pojo.dto.OneLayerTreeDic;
 import com.yt.message.admin.server.pojo.dto.PageResult;
 import com.yt.message.admin.server.pojo.entity.Platform;
 import com.yt.message.admin.server.pojo.entity.Template;
-import com.yt.message.admin.server.pojo.vo.PlatformEditReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformPageReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformRspVo;
+import com.yt.message.admin.server.pojo.vo.*;
 import com.yt.message.admin.server.service.IPlatformService;
 import com.yt.message.admin.server.service.ITemplateService;
 import com.yt.message.admin.server.utils.ExceptionAssert;
@@ -118,8 +115,8 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
                     .set(Platform::getRateLimitInterval, null);
 
         }
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+        MessageType messageType  = Optional.ofNullable( MessageType.getByCode(reqVo.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数；messageType"));
         switch (messageType) {
             case SMS:
                 updateWrapper.set(Platform::getAppId, reqVo.getAppId())
@@ -139,7 +136,7 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
                 break;
         }
 
-        ExceptionAssert.throwOnFalse(!this.existByNameAndId(reqVo.getPlatformName(),reqVo.getPlatformId()), new BusinessException("平台名已存在"));
+        ExceptionAssert.throwOnFalse(!this.existByNameAndId(reqVo.getPlatformName(), reqVo.getPlatformId()), new BusinessException("平台名已存在"));
         //更新数据库 同时同步本地缓存
         DataSyncMessagePayload payload = new DataSyncMessagePayload(DataSyncOpeType.PLATFORM_UPDATE, reqVo.getPlatformId(), reqVo.getVersion());
         Supplier<Boolean> supplier = () -> this.update(updateWrapper);
@@ -150,13 +147,14 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
 
     @Override
     public void add(PlatformReqVo reqVo) throws Exception {
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+        MessageType messageType  = Optional.ofNullable( MessageType.getByCode(reqVo.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数；messageType"));
         Platform platform = new Platform();
         platform.setPlatformName(reqVo.getPlatformName());
         platform.setMessageType(reqVo.getMessageType());
         platform.setHost(reqVo.getHost());
         platform.setHandlerName(reqVo.getHandlerName());
+        platform.setStatus(YesOrNoEnum.NO.getValue());
         //限流配置
         if (StrUtil.isNotEmpty(reqVo.getRateLimitKey())) {
             platform.setRateLimitKey(reqVo.getRateLimitKey());
@@ -182,7 +180,7 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
                 platform.setSecretKey(reqVo.getSecretKey());
                 break;
         }
-        ExceptionAssert.throwOnFalse(!this.existByNameAndId(platform.getPlatformName(),null), new BusinessException("平台名已存在"));
+        ExceptionAssert.throwOnFalse(!this.existByNameAndId(platform.getPlatformName(), null), new BusinessException("平台名已存在"));
         this.save(platform);
     }
 
@@ -194,9 +192,12 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
     }
 
     @Override
-    public List<OneLayerTreeDic<Integer, String>> treeDic() {
+    public List<OneLayerTreeDic<Integer, String>> treeDic(Integer status) {
         LambdaQueryWrapper<Platform> queryWrapper = new LambdaQueryWrapper<Platform>()
                 .select(Platform::getPlatformId, Platform::getPlatformName, Platform::getMessageType);
+        if (status != null){
+            queryWrapper.eq(Platform::getStatus, status);
+        }
         List<Platform> platforms = this.list(queryWrapper);
 
         Map<Integer, List<Dic<String>>> typeMap = new HashMap<>();
@@ -207,22 +208,38 @@ public class PlatformServiceImpl extends ServiceImpl<PlatformMapper, Platform> i
 
         return CollUtil.isEmpty(typeMap) ? Collections.emptyList() : typeMap.keySet().stream().map(
                         key ->
-                                new OneLayerTreeDic<Integer, String>(MessageType.getByCode(key).getDesc(), key, null)
-                                        .setChildren(typeMap.get(key))
+                                new OneLayerTreeDic<>(MessageType.getByCode(key).getDesc(), key, typeMap.get(key))
+
                 )
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Dic<String>> dic() {
-        return this.list().stream().map(platform -> new Dic<>(platform.getPlatformName(), platform.getPlatformId().toString())).collect(Collectors.toList());
-
+    public List<Dic<String>> dic(Integer status) {
+        LambdaQueryWrapper<Platform> wrapper = new LambdaQueryWrapper<Platform>().select(Platform::getPlatformId, Platform::getPlatformName);
+        if (status != null){
+            wrapper.eq(Platform::getStatus, status);
+        }
+        return this.list(wrapper).stream().map(platform -> new Dic<>(platform.getPlatformName(), platform.getPlatformId().toString())).collect(Collectors.toList());
     }
 
     @Override
     public String getPlatformName(long l) {
         Platform platform = this.getById(l);
         return platform == null ? null : platform.getPlatformName();
+    }
+
+    @Override
+    public void status(PlatformStatusEditVo reqVo) throws Exception {
+        ExceptionAssert.throwOnFalse(Arrays.stream(YesOrNoEnum.values()).anyMatch(e -> e.getValue().equals(reqVo.getStatus())), new IllegalRequestException("参数值非法：status"));
+        LambdaUpdateWrapper<Platform> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.set(Platform::getVersion, reqVo.getVersion() + 1)
+                .set(Platform::getStatus, reqVo.getStatus())
+                .eq(Platform::getPlatformId, reqVo.getPlatformId());
+        //更新数据库 同时同步本地缓存
+        DataSyncMessagePayload payload = new DataSyncMessagePayload(DataSyncOpeType.PLATFORM_UPDATE, reqVo.getPlatformId(), reqVo.getVersion());
+        Supplier<Boolean> supplier = () -> this.update(wrapper);
+        rocketMQTemplate.sendMessageInTransaction(MQConstant.DATA_SYNC_TOPIC_NAME, MessageBuilder.withPayload(payload).build(), supplier);
     }
 
 

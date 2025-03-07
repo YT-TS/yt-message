@@ -16,4 +16,6 @@ public enum YesOrNoEnum {
     NO(0);
 
     private Integer value;
+
+
 }

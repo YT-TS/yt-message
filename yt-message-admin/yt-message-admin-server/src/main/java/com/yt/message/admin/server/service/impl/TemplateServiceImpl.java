@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yt.message.admin.server.constant.BusinessConstant;
 import com.yt.message.admin.server.constant.AccountType;
+import com.yt.message.admin.server.constant.BusinessConstant;
 import com.yt.message.admin.server.exception.BusinessException;
 import com.yt.message.admin.server.exception.IllegalRequestException;
 import com.yt.message.admin.server.mapper.AccountGroupMapper;
@@ -110,8 +110,8 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             updateWrapper.set(Template::getRateLimitStrategy, reqVo.getRateLimitStrategy());
         }
 
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+        MessageType messageType  = Optional.ofNullable( MessageType.getByCode(reqVo.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数；messageType"));
         switch (messageType) {
             case SMS:
                 updateWrapper.set(Template::getPlatformTemplateId, reqVo.getPlatformTemplateId());
@@ -161,10 +161,10 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 .eq(Platform::getPlatformId, reqVo.getPlatformId())
                 .eq(Platform::getMessageType, reqVo.getMessageType());
 
-        boolean exists = platformMapper.exists(platformLambdaQueryWrapper);
-        ExceptionAssert.throwOnFalse(exists, new IllegalRequestException(StrUtil.format("非法参数，{}", "platformId")));
 
-
+        Platform platform = Optional.ofNullable(platformMapper.selectOne(platformLambdaQueryWrapper))
+                .orElseThrow(() -> new IllegalRequestException("非法参数 ：platformId,value " + reqVo.getPlatformId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(platform.getStatus()), new BusinessException("该平台已禁用"));
 
         Template template = new Template();
         template.setTemplateName(reqVo.getTemplateName());
@@ -173,6 +173,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
         template.setRequirePersist(reqVo.getRequirePersist());
         template.setRequireRepeatConsume(reqVo.getRequireRepeatConsume());
         template.setRequireRateLimit(reqVo.getRequireRateLimit());
+        template.setStatus(YesOrNoEnum.NO.getValue());
 
         if (YesOrNoEnum.YES.getValue().equals(reqVo.getRequireRateLimit())){
             //需要限流 检查限流策略
@@ -182,8 +183,8 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             template.setRateLimitStrategy(null);
         }
 
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+        MessageType messageType  = Optional.ofNullable( MessageType.getByCode(reqVo.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数；messageType"));
         switch (messageType) {
             case SMS:
                 template.setPlatformTemplateId(reqVo.getPlatformTemplateId());
@@ -240,8 +241,15 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
 
     @Override
     public void send(MessageSendVo reqVo) throws Exception {
-        MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
-        ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
+
+        Template template = this.getOne(new LambdaQueryWrapper<Template>().select(Template::getStatus, Template::getTemplateId,Template::getPlatformId).eq(Template::getTemplateId, reqVo.getTemplateId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(template.getStatus()), new BusinessException("该消息模板已禁用"));
+        Platform platform = platformMapper.selectOne(new LambdaQueryWrapper<Platform>().select(Platform::getPlatformId,Platform::getStatus,Platform::getMessageType).eq(Platform::getPlatformId,template.getPlatformId()));
+        ExceptionAssert.throwOnFalse(YesOrNoEnum.YES.getValue().equals(platform.getStatus()), new BusinessException("该平台已禁用"));
+
+
+        MessageType messageType  = Optional.ofNullable( MessageType.getByCode(platform.getMessageType()))
+                .orElseThrow(() -> new IllegalRequestException("非法参数；messageType"));
         Set<String> receiveAccounts = new HashSet<>();
         //接受账户校验
         if (messageType != MessageType.ROBOT) {
@@ -252,7 +260,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
                 Set<String> accounts = stringSetOptional(reqVo.getReceiveAccounts());
                 //接受账户格式校验
                 //格式校验
-                boolean result = AccountCheckUtils.checkAccounts(AccountType.getByCode(reqVo.getMessageType()), accounts);
+                boolean result = AccountCheckUtils.checkAccounts(AccountType.getByCode(messageType.getCode()), accounts);
                 ExceptionAssert.throwOnFalse(result, new BusinessException("接收账户格式错误"));
                 receiveAccounts.addAll(accounts);
 
@@ -261,9 +269,9 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             if (reqVo.getAccountGroupId() != null) {
                 //接受账户组存在性校验
                 AccountGroup accountGroup = accountGroupMapper.selectById(reqVo.getAccountGroupId());
-                ExceptionAssert.throwOnFalse(accountGroup != null, new IllegalRequestException("接受账户组不存在"));
+                Optional.ofNullable(accountGroup).orElseThrow(() -> new IllegalRequestException("接受账户组不存在"));
                 //账户组格式校验
-                ExceptionAssert.throwOnFalse(reqVo.getMessageType().equals(accountGroup.getType()), new BusinessException("接受账户组格式与模板不匹配"));
+                ExceptionAssert.throwOnFalse(messageType.getCode().equals(accountGroup.getType()), new BusinessException("接受账户组格式与模板不匹配"));
                 receiveAccounts.addAll(stringSetOptional(accountGroup.getMembers()));
             }
 
@@ -307,8 +315,11 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public List<Dic<String>> dic() {
+    public List<Dic<String>> dic(Integer status) {
         LambdaQueryWrapper<Template> wrapper = new LambdaQueryWrapper<Template>().select(Template::getTemplateId, Template::getTemplateName);
+        if (status != null){
+            wrapper.eq(Template::getStatus, status);
+        }
         List<Template> templates = this.list(wrapper);
         return templates.stream().map(template -> new Dic<>(template.getTemplateName(), template.getTemplateId().toString())).collect(Collectors.toList());
     }
@@ -320,11 +331,17 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public List<OneLayerTreeDic<String, String>> PlatformAndTemplate() {
+    public List<OneLayerTreeDic<String, String>> PlatformAndTemplate( Integer status) {
 
         LambdaQueryWrapper<Platform> platformLambdaQueryWrapper = new LambdaQueryWrapper<Platform>().select(Platform::getPlatformId, Platform::getPlatformName);
+        if (status != null){
+            platformLambdaQueryWrapper.eq(Platform::getStatus, status);
+        }
         List<Platform> platforms = platformMapper.selectList(platformLambdaQueryWrapper);
         LambdaQueryWrapper<Template> wrapper = new LambdaQueryWrapper<Template>().select(Template::getTemplateId, Template::getTemplateName, Template::getPlatformId);
+        if (status != null){
+            wrapper.eq(Template::getStatus, status);
+        }
         List<Template> templates = this.list(wrapper);
         HashMap<Long, OneLayerTreeDic<String, String>> map = new HashMap<>();
         for (Platform platform : platforms) {
@@ -334,6 +351,17 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
             map.get(template.getPlatformId()).getChildren().add(new Dic<>(template.getTemplateName(), template.getTemplateId().toString()));
         }
         return new ArrayList<>(map.values());
+    }
+
+    @Override
+    public void status(TemplateStatusEditVo reqVo) {
+        LambdaUpdateWrapper<Template> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.set(Template::getStatus, reqVo.getStatus())
+                .set(Template::getVersion, reqVo.getVersion() + 1)
+                .eq(Template::getTemplateId, reqVo.getTemplateId());
+        DataSyncMessagePayload payload = new DataSyncMessagePayload(DataSyncOpeType.TEMPLATE_UPDATE, reqVo.getTemplateId(), reqVo.getVersion());
+        Supplier<Boolean> supplier = () -> this.update(wrapper);
+        rocketMQTemplate.sendMessageInTransaction(MQConstant.DATA_SYNC_TOPIC_NAME, MessageBuilder.withPayload(payload).build(), supplier);
     }
 
     private Set<String> stringSetOptional(String options) {

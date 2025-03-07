@@ -2,10 +2,7 @@ package com.yt.message.admin.server.controller;
 
 
 import com.yt.message.admin.server.pojo.dto.PageResult;
-import com.yt.message.admin.server.pojo.vo.PlatformEditReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformPageReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformReqVo;
-import com.yt.message.admin.server.pojo.vo.PlatformRspVo;
+import com.yt.message.admin.server.pojo.vo.*;
 import com.yt.message.admin.server.service.IPlatformService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +39,10 @@ public class PlatformController {
     @PutMapping
     public void edit(@RequestBody @Validated PlatformEditReqVo reqVo) throws Exception {
         platformService.edit(reqVo);
+    }
+    @PatchMapping("/status")
+    public void status(@RequestBody @Validated PlatformStatusEditVo reqVo) throws Exception {
+        platformService.status(reqVo);
     }
 
     @PostMapping
