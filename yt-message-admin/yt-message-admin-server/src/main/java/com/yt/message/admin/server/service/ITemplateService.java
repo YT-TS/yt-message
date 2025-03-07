@@ -41,5 +41,5 @@ public interface ITemplateService extends IService<Template> {
 
     List<OneLayerTreeDic<String,String>> PlatformAndTemplate(@PathVariable(required = false) Integer status);
 
-    void status(TemplateStatusEditVo reqVo);
+    void status(TemplateStatusEditVo reqVo) throws Exception;
 }

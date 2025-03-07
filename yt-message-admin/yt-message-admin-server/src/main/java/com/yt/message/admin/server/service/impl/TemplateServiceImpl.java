@@ -354,7 +354,8 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     }
 
     @Override
-    public void status(TemplateStatusEditVo reqVo) {
+    public void status(TemplateStatusEditVo reqVo) throws Exception {
+        ExceptionAssert.throwOnFalse(Arrays.stream(YesOrNoEnum.values()).anyMatch(e -> e.getValue().equals(reqVo.getStatus())), new IllegalRequestException("参数值非法：status"));
         LambdaUpdateWrapper<Template> wrapper = new LambdaUpdateWrapper<>();
         wrapper.set(Template::getStatus, reqVo.getStatus())
                 .set(Template::getVersion, reqVo.getVersion() + 1)

@@ -26,7 +26,7 @@ public class TemplateController {
     private ITemplateService templateService;
 
     @PostMapping("/page")
-    public PageResult<TemplateRspVo> pamge(@RequestBody TemplatePageReqVo reqVo) {
+    public PageResult<TemplateRspVo> page(@RequestBody TemplatePageReqVo reqVo) {
         return templateService.page(reqVo);
     }
     @PutMapping
