@@ -18,8 +18,10 @@ export namespace recordApi {
   export interface TrackStatus {
     issue?:boolean
     issueTimestamp?:number
+    issueNote?:string
     send?:boolean
     sendTimestamp?:number
+    sendNote?:string
   }
   
 }

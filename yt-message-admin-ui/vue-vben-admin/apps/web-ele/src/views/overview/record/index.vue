@@ -14,8 +14,18 @@
     <TrackModal title="消息轨迹">
       <!-- <el-steps  :active="activeTrack()" align-center :process-status="activeStatus()" > -->
       <el-steps align-center>
-        <el-step title="平台下发" :description="trackTime(0)" :status="trackStatusActive(0)" />
-        <el-step title="消息发送" :description="trackTime(1)" :status="trackStatusActive(1)" />
+        <el-step title="平台下发"  :status="trackStatusActive(0)">
+          <template #description>
+            <div>{{trackTime(0)}}</div>
+            <div>{{trackStatus.issueNote}}</div>
+          </template>
+        </el-step>
+        <el-step title="消息发送" :status="trackStatusActive(1)">
+          <template #description>
+            <div>{{trackTime(1)}}</div>
+            <div>{{trackStatus.sendNote}}</div>
+          </template>
+        </el-step>
       </el-steps>
     </TrackModal>
   </div>
@@ -40,12 +50,12 @@ import { ref } from 'vue';
 //表格选项
 const gridOptions: VxeGridProps<recordApi.Record> = {
   pagerConfig: {
-   
-    layouts: [ 'PrevPage', 'Number', 'NextPage', 'FullJump'],
+
+    layouts: ['PrevPage', 'Number', 'NextPage', 'FullJump'],
     background: true,
     align: 'left',
     pagerCount: 3,
-    pageSize:10
+    pageSize: 10
   },
   columns: [
     { title: '序号', type: 'seq' },
@@ -99,7 +109,7 @@ const gridOptions: VxeGridProps<recordApi.Record> = {
         let dataArrays = resObject.datarows
         let dataInfo = resObject.schema
         const data: any[] = []
-        
+
         dataArrays.forEach((element: any) => {
           let item: any = {}
           for (let index = 0; index < element.length; index++) {
@@ -108,7 +118,7 @@ const gridOptions: VxeGridProps<recordApi.Record> = {
           }
           data.push(item)
         });
-      
+
         for (const element of data) {
           if (element.step == -1) {
             element['result'] = false
@@ -118,8 +128,8 @@ const gridOptions: VxeGridProps<recordApi.Record> = {
             element['result'] = resObject.datarows[1][2] > 0 ? true : false
           }
         }
-        
-     
+
+
         return {
           pageNum: 1,
           pageSize: 10,
@@ -203,11 +213,11 @@ const trackStatus = ref<recordApi.TrackStatus>({})
 const track = (row: any) => {
 
   trackApi(row.biz_id).then(res => {
-
     let resObject = JSON.parse(res)
     if (resObject.datarows.length == 1) {
       trackStatus.value.issue = resObject.datarows[0][2] > 0 ? true : false;
       trackStatus.value.issueTimestamp = resObject.datarows[0][1];
+      trackStatus.value.issueNote = resObject.datarows[0][5];
     } else if (resObject.datarows.length == 2) {
       resObject.datarows.forEach((element: any) => {
         if (element[2] == 1) {
@@ -216,12 +226,14 @@ const track = (row: any) => {
         } else if (element[2] == -1) {
           trackStatus.value.issue = false;
           trackStatus.value.issueTimestamp = element[1];
+          trackStatus.value.issueNote = element[5];
         } else if (element[2] == 2) {
           trackStatus.value.send = true;
           trackStatus.value.sendTimestamp = element[1];
         } else if (element[2] == -2) {
           trackStatus.value.send = false;
           trackStatus.value.sendTimestamp = element[1];
+          trackStatus.value.sendNote = element[5];
         }
       });
     }
@@ -232,15 +244,14 @@ const track = (row: any) => {
 
 const trackStatusActive = (active: number) => {
   if (active == 0) {
-
     return trackStatus.value.issue == undefined ? 'wait' : trackStatus.value.issue ? 'success' : 'error'
   } else {
+
     return trackStatus.value.send == undefined ? 'wait' : trackStatus.value.send ? 'success' : 'error'
   }
 
 }
 const trackTime = (active: number) => {
-
   if (active == 0) {
 
     return trackStatus.value.issueTimestamp ? moment(trackStatus.value.issueTimestamp).format('YYYY-MM-DD HH:mm:ss') : ''
