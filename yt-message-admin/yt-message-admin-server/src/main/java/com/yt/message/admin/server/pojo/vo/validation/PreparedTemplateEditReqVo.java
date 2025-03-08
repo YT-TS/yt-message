@@ -22,11 +22,7 @@ public class PreparedTemplateEditReqVo {
      */
     @NotBlank(message = "模板名称不能为空")
     private String templateName;
-    /**
-     * 消息内容模板id
-     */
-    @NotNull(message = "内容模板不能为空")
-    private Long templateId;
+
 
     /**
      * 账户/消息类型

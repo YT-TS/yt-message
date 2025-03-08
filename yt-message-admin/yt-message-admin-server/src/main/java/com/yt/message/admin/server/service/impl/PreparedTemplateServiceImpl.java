@@ -147,8 +147,7 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
     @Override
     public void edit(PreparedTemplateEditReqVo reqVo) throws Exception {
         LambdaUpdateWrapper<PreparedTemplate> preparedTemplateLambdaUpdateWrapper = new LambdaUpdateWrapper<PreparedTemplate>()
-                .eq(PreparedTemplate::getPreparedTemplateId, reqVo.getPreparedTemplateId())
-                .eq(PreparedTemplate::getTemplateId, reqVo.getTemplateId());
+                .eq(PreparedTemplate::getPreparedTemplateId, reqVo.getPreparedTemplateId());
         MessageType messageType = MessageType.getByCode(reqVo.getMessageType());
         ExceptionAssert.throwOnFalse(messageType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "messageType")));
         if (messageType != MessageType.ROBOT) {
