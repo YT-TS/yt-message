@@ -16,7 +16,7 @@
         <el-button type="primary" @click="add">新增</el-button>
       </template>
       <template #status="{ row }">
-        <el-switch v-model="row.status" :active-value="1" @change="updateStatus($event, row)" :inactive-value="0"
+        <el-switch v-model="row.status" :active-value="yesValue" @change="updateStatus($event, row)" :inactive-value="noValue"
           active-text="启用" inactive-text="禁用" :inline-prompt="true" />
       </template>
     </Grid>
@@ -32,8 +32,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import { dic, type Dic, type OneLayerTreeDic, treeDic } from '#/api/dic'
-import { computed, ref, reactive, h } from 'vue';
+import {   type OneLayerTreeDic, treeDic } from '#/api/dic'
+import { computed, reactive, h ,inject} from 'vue';
 import { useVbenVxeGrid, type VxeGridProps } from '#/adapter/vxe-table';
 import type { templateApi } from '#/api/system/template';
 import { page as templatePage, update, create, remove, sendMessage, status } from '#/api/system/template';
@@ -48,30 +48,25 @@ import {
 } from 'element-plus';
 import { useVbenModal } from '@vben/common-ui';
 import AccountGroupSelect from '#/components/account-group-select.vue';
+import { useDicStore } from '#/store';
+const {MESSAGE_TYPE,YES_OR_NO }  = inject<any>('$dics')
 //TODO 分页展示更多信息   
-
+const dicStore =  useDicStore()
 //获取消息类型字典
-const messageUsageDic = ref<Dic[]>([]);
-dic('messageUsage').then(res => messageUsageDic.value = res);
+const messageUsageDic = dicStore.getDic('messageUsage');
 //获取消息类型-平台字典
 let plateformDic = reactive<OneLayerTreeDic<number, string>[]>([]);
 treeDic('platform').then(res => plateformDic = res);
 
-const yesValue = ref();
-const noValue = ref();
-dic('yesOrNo').then(res => {
-  yesValue.value = res.find(item => item.label === 'YES')?.value;
-  noValue.value = res.find(item => item.label === 'NO')?.value;
-})
+//按钮字典
+const yesValue =YES_OR_NO.YES;
+const noValue = YES_OR_NO.NO;
 //获取平台组字典
-const platformDic = ref<Dic[]>([]);
-dic('platform').then(res => platformDic.value = res);
+const platformDic = dicStore.getDic('platform');
 //获取账户组字典
-const accountGroupDic = ref<Dic[]>([]);
-dic('accountGroup').then(res => accountGroupDic.value = res);
+const accountGroupDic = dicStore.getDic('accountGroup');
 //获取限流类型字典
-const rateLimitStrategy = ref<Dic[]>([]);
-dic('rateLimitStrategy').then(res => rateLimitStrategy.value = res);
+const rateLimitStrategy = dicStore.getDic('rateLimitStrategy');
 
 
 //表格选项
@@ -215,7 +210,7 @@ const [SendForm, sendFormApi] = useVbenForm({
       label: '标题参数',
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -240,7 +235,7 @@ const [SendForm, sendFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -258,7 +253,7 @@ const [SendForm, sendFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -347,7 +342,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
@@ -365,7 +360,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -380,7 +375,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -395,7 +390,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -410,7 +405,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -424,7 +419,7 @@ const [EditForm, editFormApi] = useVbenForm({
       // component: h(Codemirror, { border: true }),
       dependencies: {
         if(values) {
-          return values.messageType == 2 || values.messageType == 3;
+          return values.messageType == MESSAGE_TYPE.EMAIL || values.messageType == MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -442,7 +437,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -458,7 +453,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -496,7 +491,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.requireRateLimit == 1;
+          return values.requireRateLimit == yesValue;
         },
         triggerFields: ['requireRateLimit'],
       },
@@ -583,13 +578,13 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
       // 字段名
       fieldName: 'platformTemplateId',
-      // 界面显示的label吗， 
+      // 界面显示的label， 
       label: '三方平台模板id',
       rules: 'required',
       help: '如果三方平台模板有参数,请以keyword1、keyword2、keyword3  ...命名'
@@ -601,7 +596,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -616,7 +611,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -631,7 +626,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -646,7 +641,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -659,7 +654,7 @@ const [AddForm, addFormApi] = useVbenForm({
       component: h(Codemirror, { border: true }),
       dependencies: {
         if(values) {
-          return values.messageType == 2 || values.messageType == 3;
+          return values.messageType == MESSAGE_TYPE.EMAIL || values.messageType == MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -680,7 +675,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType ==  MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -696,7 +691,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType ==  MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -733,7 +728,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.requireRateLimit == 1;
+          return values.requireRateLimit == yesValue;
         },
         triggerFields: ['requireRateLimit'],
       },
@@ -784,7 +779,7 @@ async function add() {
 }
 //提交编辑
 async function handleEdit(row: any) {
-  if (row.requireRateLimit == 1) {
+  if (row.requireRateLimit == yesValue) {
     if (!row.rateLimitStrategy) {
       ElMessage.error('限流参数为空');
       return;
@@ -806,7 +801,7 @@ async function handleEdit(row: any) {
 }
 //提交添加
 async function handleAdd(row: any) {
-  if (row.requireRateLimit == 1) {
+  if (row.requireRateLimit == yesValue) {
     if (!row.rateLimitStrategy) {
       ElMessage.error('限流参数为空');
       return;
@@ -843,7 +838,7 @@ function send(row: templateApi.TemplateRsp) {
   sendModalApi.open()
 }
 function handleSend(row: any) {
-  if (row.messageType != 3) {
+  if (row.messageType != MESSAGE_TYPE.ROBOT) {
     if (!row.receiveAccounts && !row.accountGroupId) {
       ElMessage.error('接收账户为空');
       return;

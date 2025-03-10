@@ -2,7 +2,8 @@
 import { list, update } from '#/api/system/token'
 import { ref } from 'vue';
 import { ElTable, ElTableColumn, ElLink,ElPopconfirm, ElMessage } from 'element-plus';
-import { dic, type Dic } from '#/api/dic';
+import { useDicStore } from '#/store/dic';
+const dicStore = useDicStore();
 const tokenList = () => {
   list().then(res => {
     tableData.value = res
@@ -27,8 +28,7 @@ const updateToken = (row: any) => {
 
 const tableData = ref<any[]>([]);
 //获取平台组字典
-const platformDic = ref<Dic[]>([]);
-dic('platform').then(res => platformDic.value = res);
+const platformDic = dicStore.getDic('platform');
 tokenList()
 </script>
 

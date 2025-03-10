@@ -14,12 +14,14 @@ import { $t, setupI18n } from '#/locales';
 import { initComponentAdapter } from './adapter/component';
 import App from './app.vue';
 import { router } from './router';
+import {DICS} from '#/constant/dics';
 
 async function bootstrap(namespace: string) {
   // 初始化组件适配器
   await initComponentAdapter();
   const app = createApp(App);
-
+  //挂载全局常量
+  app.provide('$dics',DICS)
   // 注册Element Plus提供的v-loading指令
   app.directive('loading', ElLoading.directive);
 
@@ -35,6 +37,8 @@ async function bootstrap(namespace: string) {
   // 配置路由及路由守卫
   app.use(router);
 
+  
+ 
   // 动态更新标题
   watchEffect(() => {
     if (preferences.app.dynamicTitle) {

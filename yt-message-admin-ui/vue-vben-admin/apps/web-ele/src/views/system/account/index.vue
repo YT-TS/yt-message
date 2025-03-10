@@ -29,10 +29,11 @@ import type { VbenFormProps } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import type { accountApi } from '#/api/system/account';
 import { page as accountPage, update, add as create, remove } from '#/api/system/account';
-import { dic, type Dic } from '#/api/dic';
-import { computed,  ref } from 'vue';
+
+import { computed } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
+import { useDicStore } from '#/store';
 import {
   ElLink,
   ElButton,
@@ -40,8 +41,7 @@ import {
   ElPopconfirm
 } from 'element-plus';
 //获取账户类型字典
-const accountTypeDic = ref<Dic[]>([]);
-dic('accountType').then(res => accountTypeDic.value = res);
+const accountTypeDic = useDicStore().getDic('accountType');
 //表格选项
 const gridOptions: VxeGridProps<accountApi.AccountGroupRsp> = {
   columns: [
@@ -130,6 +130,7 @@ const [AddForm] = useVbenForm({
       },
       fieldName: 'type',
       label: '账户类型',
+      rules: 'required',
     },
     {
       component: 'Input',
@@ -139,6 +140,7 @@ const [AddForm] = useVbenForm({
       },
       // 字段名
       fieldName: 'groupName',
+      rules: 'required',
       // 界面显示的label
       label: '账户组名',
     },
@@ -203,6 +205,7 @@ const [EditForm,editFormApi] = useVbenForm({
       },
       fieldName: 'type',
       label: '账户类型',
+      rules: 'required',
       disabled: true,
     },
     {
@@ -215,6 +218,7 @@ const [EditForm,editFormApi] = useVbenForm({
       fieldName: 'groupName',
       // 界面显示的label
       label: '账户组名',
+      rules: 'required',
     },
     {
       component: 'Input',

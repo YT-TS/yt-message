@@ -33,8 +33,8 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import type { VbenFormProps } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { page as templatePage, update, add as create, remove, preparedTemplateApi,send as sendMessage} from '#/api/system/prepared-template';
-import { dic, treeDic, type Dic, type OneLayerTreeDic } from '#/api/dic';
-import { computed, ref, h, reactive } from 'vue';
+import {  treeDic,  type OneLayerTreeDic } from '#/api/dic';
+import { computed, ref, h, reactive,inject } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form'
 import {
@@ -44,19 +44,18 @@ import {
   ElPopconfirm
 } from 'element-plus';
 import AccountGroupSelect from '#/components/account-group-select.vue';
+import { useDicStore } from '#/store';
+const {MESSAGE_TYPE,YES_OR_NO }  = inject<any>('$dics')
+
 //获取平台-模板字典
 let platformTemplateDic = ref<OneLayerTreeDic[]>([]);
 treeDic('PlatformAndTemplate').then(res => platformTemplateDic.value = res);
 //获取账户组字典
-const accountGroupDic = ref<Dic[]>([]);
-dic('accountGroup').then(res => accountGroupDic.value = res);
+const accountGroupDic = useDicStore().getDic('accountGroup');
 //按钮字典
-const yesValue = ref();
-const noValue = ref();
-dic('yesOrNo').then(res => {
-  yesValue.value = res.find(item => item.label === 'YES')?.value;
-  noValue.value = res.find(item => item.label === 'NO')?.value;
-})
+const yesValue =YES_OR_NO.YES;
+const noValue = YES_OR_NO.NO;
+
 //获取消息类型-平台字典
 let plateformDic = reactive<OneLayerTreeDic<number, string>[]>([]);
 treeDic('platform').then(res => plateformDic = res);
@@ -180,7 +179,7 @@ const [AddForm, addFormApi] = useVbenForm({
       label: '模板标题参数',
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -203,7 +202,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -220,7 +219,7 @@ const [AddForm, addFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -245,7 +244,7 @@ function add() {
 }
 //提交添加
 async function handleAdd(row: any) {
-  if (row.messageType != 3) {
+  if (row.messageType != MESSAGE_TYPE.ROBOT) {
     if (!row.receiveAccounts && !row.accountGroupId) {
       ElMessage.error('接收账户为空');
       return;
@@ -334,7 +333,7 @@ const [EditForm, editFormApi] = useVbenForm({
       label: '模板标题参数',
       dependencies: {
         if(values) {
-          return values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -357,7 +356,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -374,7 +373,7 @@ const [EditForm, editFormApi] = useVbenForm({
       },
       dependencies: {
         if(values) {
-          return values.messageType != 3;
+          return values.messageType != MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -417,7 +416,7 @@ async function edit(row: preparedTemplateApi.PreparedTemplateRsp) {
 }
 //提交编辑
 async function handleEdit(row: any) {
-  if (row.messageType != 3) {
+  if (row.messageType != MESSAGE_TYPE.ROBOT) {
     if (!row.receiveAccounts && !row.accountGroupId) {
       ElMessage.error('接收账户为空');
       return;

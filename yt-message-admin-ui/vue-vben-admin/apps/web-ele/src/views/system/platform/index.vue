@@ -15,7 +15,7 @@
         <el-button type="primary" @click="add">新增</el-button>
       </template>
       <template #status="{row}">
-        <el-switch v-model="row.status" :active-value="1" @change="updateStatus($event,row)"  :inactive-value="0" active-text="启用" inactive-text="禁用" :inline-prompt="true"/>
+        <el-switch v-model="row.status" :active-value="YES_OR_NO.YES" @change="updateStatus($event,row)"  :inactive-value="YES_OR_NO.NO" active-text="启用" inactive-text="禁用" :inline-prompt="true"/>
       </template>
     </Grid>
     <Modal title="编辑">
@@ -33,7 +33,6 @@ import type { VbenFormProps } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { page as platformPage, update, add as create, remove,status } from '#/api/system/platform';
 import { platformApi } from '#/api/system/platform'
-import { dic, type Dic } from '#/api/dic'
 import {
   ElLink,
   ElButton,
@@ -41,13 +40,16 @@ import {
   ElPopconfirm,
   ElSwitch,
 } from 'element-plus';
-import { ref, computed } from 'vue';
+import {  computed,inject } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 import { useVbenForm } from '#/adapter/form';
+import { useDicStore } from '#/store';
+const {MESSAGE_TYPE,YES_OR_NO }  = inject<any>('$dics')
 
 //获取消息类型字典
-const messageTypeDic = ref<Dic[]>([]);
-dic('messageType').then(res => messageTypeDic.value = res);
+const dicStore = useDicStore();
+const messageTypeDic =  dicStore.getDic("messageType");
+
 
 //编辑模态框
 const [Modal, modalApi] = useVbenModal({
@@ -172,7 +174,7 @@ const [Form, formApi] = useVbenForm({
       label: '服务器地址或webhook地址',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 2 || values.messageType == 3;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.EMAIL || values.messageType == MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -189,7 +191,7 @@ const [Form, formApi] = useVbenForm({
       label: '请求端口',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -203,7 +205,7 @@ const [Form, formApi] = useVbenForm({
       label: '应用id',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
@@ -217,7 +219,7 @@ const [Form, formApi] = useVbenForm({
       label: '访问密钥id',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == MESSAGE_TYPE.SMS;
         },
         triggerFields: ['messageType'],
       },
@@ -231,7 +233,7 @@ const [Form, formApi] = useVbenForm({
       label: '访问密钥值或签名密钥',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 3 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.ROBOT || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
@@ -245,7 +247,7 @@ const [Form, formApi] = useVbenForm({
       label: '签名原文',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == MESSAGE_TYPE.SMS;
         },
         triggerFields: ['messageType'],
       },
@@ -344,7 +346,7 @@ const [AddForm] = useVbenForm({
       rules: 'required',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 2 || values.messageType == 3;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.EMAIL || values.messageType == MESSAGE_TYPE.ROBOT;
         },
         triggerFields: ['messageType'],
       },
@@ -361,7 +363,7 @@ const [AddForm] = useVbenForm({
       label: '请求端口',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 2;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.EMAIL;
         },
         triggerFields: ['messageType'],
       },
@@ -376,7 +378,7 @@ const [AddForm] = useVbenForm({
       label: '应用id',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
@@ -391,7 +393,7 @@ const [AddForm] = useVbenForm({
       label: '访问密钥id',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == MESSAGE_TYPE.SMS;
         },
         triggerFields: ['messageType'],
       },
@@ -406,7 +408,7 @@ const [AddForm] = useVbenForm({
       label: '访问密钥值或签名密钥',
       dependencies: {
         if(values) {
-          return values.messageType == 1 || values.messageType == 3 || values.messageType == 5;
+          return values.messageType == MESSAGE_TYPE.SMS || values.messageType == MESSAGE_TYPE.ROBOT || values.messageType == MESSAGE_TYPE.WECHAT_OFFICIAL_ACCOUNT_TEMPLATE_MESSAGE;
         },
         triggerFields: ['messageType'],
       },
@@ -420,7 +422,7 @@ const [AddForm] = useVbenForm({
       label: '签名原文',
       dependencies: {
         if(values) {
-          return values.messageType == 1;
+          return values.messageType == MESSAGE_TYPE.SMS;
         },
         triggerFields: ['messageType'],
       },
@@ -487,6 +489,8 @@ async function handleEdit(row: any) {
     ElMessage.success('修改成功');
     modalApi.close()
     gridApi.query()
+    //删除字典缓存
+    dicStore.removeDic('platform')
   }).catch(() => { })
 }
 //打开添加框
@@ -499,6 +503,8 @@ async function handleAdd(row: any) {
     ElMessage.success('添加成功');
     addModalApi.close()
     gridApi.query()
+    //删除字典缓存
+    dicStore.removeDic('platform')
   }).catch(() => { })
 }
 //删除
@@ -506,6 +512,8 @@ async function handleDelete(row: any) {
   remove(row.platformId).then(() => {
     ElMessage.success('删除成功');
     gridApi.query()
+    //删除字典缓存
+    dicStore.removeDic('platform')
   }).catch(() => { })
 
 }
