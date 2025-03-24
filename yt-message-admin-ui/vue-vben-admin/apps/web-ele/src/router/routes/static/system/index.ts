@@ -58,6 +58,15 @@ const routes: RouteRecordRaw[] = [
           title: '平台token池',
         },
       },
+      {
+        name: 'Attachment',
+        path: '/system/attachment',
+        component: () => import('#/views/system/attachment/index.vue'),
+        meta: {
+          icon: 'material-symbols:attachment',
+          title: '附件库',
+        },
+      },
     ],
   },
 ];

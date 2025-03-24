@@ -1,6 +1,7 @@
 package com.yt.message.admin.server.controller;
 
 import com.yt.message.admin.server.constant.AccountType;
+import com.yt.message.admin.server.constant.AttachmentType;
 import com.yt.message.admin.server.pojo.dto.Dic;
 import com.yt.message.admin.server.pojo.dto.OneLayerTreeDic;
 import com.yt.message.admin.server.service.IAccountGroupService;
@@ -91,7 +92,10 @@ public class DicController {
     public List<Dic<Integer>> rateLimitStrategy(){
         return Arrays.stream(RateLimitStrategy.values()).map(item->new Dic<>(item.getDesc(), item.getCode())).collect(Collectors.toList());
     }
-
+    @GetMapping("/attachmentType")
+    public List<Dic<Integer>> attachmentType(){
+        return Arrays.stream(AttachmentType.values()).map(item->new Dic<>(item.getDesc(), item.getCode())).collect(Collectors.toList());
+    }
 
 
 }

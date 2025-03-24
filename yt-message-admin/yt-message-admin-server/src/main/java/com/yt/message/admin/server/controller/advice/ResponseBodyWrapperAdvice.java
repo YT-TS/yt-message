@@ -1,7 +1,7 @@
 package com.yt.message.admin.server.controller.advice;
 
 import cn.hutool.json.JSONUtil;
-import com.yt.message.admin.server.pojo.dto.R;
+import com.yt.message.common.pojo.dto.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;

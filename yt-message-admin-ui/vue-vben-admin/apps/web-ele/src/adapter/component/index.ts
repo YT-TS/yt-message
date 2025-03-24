@@ -35,6 +35,7 @@ import {
   ElInputTag,
 } from 'element-plus';
 import Codemirror from "codemirror-editor-vue3";
+import FileUpload from '#/components/FileUpload.vue';
 const withDefaultPlaceholder = <T extends Component>(
   component: T,
   type: 'input' | 'select',
@@ -66,6 +67,7 @@ export type ComponentType =
 | 'ElCascader'
 | 'Coder'
 | 'InputTag'
+| 'FileUpload'
 | BaseFormComponentType;
 
 async function initComponentAdapter() {
@@ -237,6 +239,9 @@ async function initComponentAdapter() {
     },
     TreeSelect: withDefaultPlaceholder(ElTreeSelect, 'select'),
     Upload: ElUpload,
+    FileUpload: (props, { attrs, slots }) => {
+      return h(FileUpload, { ...props, attrs }, slots);
+    },
   };
 
   // 将组件注册到全局共享状态中

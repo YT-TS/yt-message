@@ -62,7 +62,7 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     @Autowired
     private IPreparedTemplateService preparedTemplateService;
 
-    @DubboReference(timeout = 5000, retries = 0, lazy = true)
+    @DubboReference(timeout = 5000, retries = 0, lazy = true,check = false)
     private MessageService messageService;
     @Autowired
     private AccountGroupMapper accountGroupMapper;

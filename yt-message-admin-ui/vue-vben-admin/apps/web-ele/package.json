@@ -26,6 +26,7 @@
     "#/*": "./src/*"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
@@ -41,6 +42,7 @@
     "@vben/types": "workspace:*",
     "@vben/utils": "workspace:*",
     "@vueuse/core": "catalog:",
+    "bytes": "^3.1.2",
     "codemirror": "^5",
     "codemirror-editor-vue3": "^2.8.0",
     "dayjs": "catalog:",

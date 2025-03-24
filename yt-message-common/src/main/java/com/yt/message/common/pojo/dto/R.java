@@ -1,4 +1,4 @@
-package com.yt.message.admin.server.pojo.dto;
+package com.yt.message.common.pojo.dto;
 
 import com.yt.message.common.enums.ResultCodeEnum;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class R <T> {
+public class R<T> {
 
     private int code;
     private String message;

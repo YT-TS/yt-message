@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -53,7 +54,8 @@ public class AccountGroupServiceImpl extends ServiceImpl<AccountGroupMapper, Acc
     @Override
     public void add(AccountGroupReqVo reqVo) throws Exception {
         AccountType accountType = AccountType.getByCode(reqVo.getType());
-        ExceptionAssert.throwOnFalse(accountType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "type")));
+        Optional.ofNullable(accountType).orElseThrow(() -> new IllegalRequestException("非法参数；type"));
+
         //格式校验
         boolean result = AccountCheckUtils.checkAccounts(accountType, reqVo.getMembers());
 
@@ -75,7 +77,7 @@ public class AccountGroupServiceImpl extends ServiceImpl<AccountGroupMapper, Acc
     @Override
     public void edit(AccountGroupEditReqVo reqVo) throws Exception {
         AccountType accountType = AccountType.getByCode(reqVo.getType());
-        ExceptionAssert.throwOnFalse(accountType != null, new IllegalRequestException(StrUtil.format("非法参数，{}", "type")));
+        Optional.ofNullable(accountType).orElseThrow(() -> new IllegalRequestException("非法参数；type"));
         //格式校验
         boolean result = AccountCheckUtils.checkAccounts(accountType, reqVo.getMembers());
 

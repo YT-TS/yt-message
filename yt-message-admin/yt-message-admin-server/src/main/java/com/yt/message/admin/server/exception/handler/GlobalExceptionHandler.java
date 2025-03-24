@@ -2,7 +2,7 @@ package com.yt.message.admin.server.exception.handler;
 
 import com.yt.message.admin.server.exception.BusinessException;
 import com.yt.message.admin.server.exception.IllegalRequestException;
-import com.yt.message.admin.server.pojo.dto.R;
+import com.yt.message.common.pojo.dto.R;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;

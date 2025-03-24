@@ -57,7 +57,7 @@ public class PreparedTemplateServiceImpl extends ServiceImpl<PreparedTemplateMap
     private AccountGroupMapper accountGroupMapper;
     @Autowired
     private TemplateMapper templateMapper;
-    @DubboReference( timeout = 5000, retries = 0, lazy = true)
+    @DubboReference( timeout = 5000, retries = 0, lazy = true,check = false)
     private MessageService messageService;
     @Autowired
     private PlatformMapper platformMapper;

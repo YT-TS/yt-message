@@ -16,6 +16,7 @@
         <module>yt-message-admin</module>
         <module>yt-message-mq</module>
         <module>yt-message-stream-flink</module>
+
     </modules>
 
     <properties>
@@ -206,6 +207,11 @@
                 <groupId>org.apache.httpcomponents.client5</groupId>
                 <artifactId>httpclient5</artifactId>
                 <version>5.4.2</version>
+            </dependency>
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>8.5.17</version>
             </dependency>
 
 
